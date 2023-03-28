@@ -10,4 +10,6 @@ export tags, hastag, tag!, untag!
 include("Numerics.jl")
 export contract
 
+include("Differentiation.jl")
+
 end

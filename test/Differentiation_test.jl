@@ -65,19 +65,19 @@
     end
 
     @testset "contract" begin
-        @testset "[number-number product]" begin
-            @testset "float" begin
+        @testset "[Number-Number product]" begin
+            @testset "T=Float" begin
                 test_rrule(contract, 5.0, 2.0)
                 test_frule(contract, 5.0, 2.0)
             end
 
-            @testset "complex" begin
+            @testset "T=Complex" begin
                 test_rrule(contract, 5.0 + 1.0im, 2.0 - 2.0im)
                 test_frule(contract, 5.0 + 1.0im, 2.0 - 2.0im)
             end
         end
 
-        @testset "[number-tensor product]" begin
+        @testset "[Number-Tensor product]" begin
             b = Tensor(rand(2, 2), (:i, :j))
             z = 1.0 + 1im
 

@@ -1,20 +1,36 @@
+using OMEinsum
+using LinearAlgebra
+
+"""
+    contract(::Tensor, ::Tensor[, i])
+
+Perform tensor contraction operation.
+"""
 function contract(a::Tensor, b::Tensor, i=(∩(labels(a), labels(b))))
     ia = labels(a)
     ib = labels(b)
     i = ∩(i, ia, ib)
 
-    ic = tuple(setdiff(ia ∪ ib, i isa Sequence ? i : [i])...)
+    ic = tuple(setdiff(ia ∪ ib, i isa Base.AbstractVecOrTuple ? i : (i,))...)
 
-    data = EinCode((String.(ia), String.(ib)), String.(ic))(a, b)
+    data = EinCode((String.(ia), String.(ib)), String.(ic))(parent(a), parent(b))
 
     # TODO merge metadata?
     return Tensor(data, ic)
 end
 
-contract(a, b) = a * b
-contract(a::AbstractArray{T,0}, b) where {T} = contract(only(a), b)
-contract(a, b::AbstractArray{T,0}) where {T} = contract(a, only(b))
-contract(a::AbstractArray{<:Any,0}, b::AbstractArray{<:Any,0}) = contract(only(a), only(b))
+contract(a::AbstractArray{T,0}, b::Tensor{T}) where {T} = contract(Tensor(a), b)
+contract(a::Tensor{T}, b::AbstractArray{T,0}) where {T} = contract(a, Tensor(b))
+contract(a::AbstractArray{<:Any,0}, b::AbstractArray{<:Any,0}) = contract(Tensor(a), Tensor(b))
+
+"""
+    *(::Tensor, ::Tensor)
+
+Alias for [`contract`](@ref).
+"""
+Base.:*(a::Tensor, b::Tensor) = contract(a, b)
+Base.:*(a::Tensor, b) = contract(a, b)
+Base.:*(a, b::Tensor) = contract(a, b)
 
 function LinearAlgebra.svd(t::Tensor; left_inds=(), kwargs...)
     if any(∉(labels(t)), left_inds)

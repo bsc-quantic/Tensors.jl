@@ -1,7 +1,5 @@
 using Base: @propagate_inbounds
 using Base.Broadcast: Broadcasted, ArrayStyle
-using LinearAlgebra
-using OMEinsum
 
 struct Tensor{T,N,A<:AbstractArray{T,N}} <: AbstractArray{T,N}
     data::A
@@ -21,6 +19,8 @@ Tensor(data::A, labels::NTuple{N,Symbol}; meta...) where {T,N,A<:AbstractArray{T
     Tensor{T,N,A}(data, labels; meta...)
 Tensor{T,N,A}(data::A, labels::NTuple{N,Symbol}, meta) where {T,N,A<:AbstractArray{T,N}} =
     Tensor{T,N,A}(data, labels; meta...)
+
+Tensor(data::AbstractArray{T,0}; meta...) where {T} = Tensor(data, (); meta...)
 
 Base.copy(t::Tensor) = Tensor(parent(t), labels(t); deepcopy(t.meta)...)
 

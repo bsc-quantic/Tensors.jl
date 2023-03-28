@@ -67,13 +67,21 @@
     @testset "contract" begin
         @testset "[Number-Number product]" begin
             @testset "T=Float" begin
-                test_rrule(contract, 5.0, 2.0)
-                test_frule(contract, 5.0, 2.0)
+                a = 5.0
+                b = 2.0
+
+                @test contract(a, b) == a * b
+                test_rrule(contract, a, b)
+                test_frule(contract, a, b)
             end
 
             @testset "T=Complex" begin
-                test_rrule(contract, 5.0 + 1.0im, 2.0 - 2.0im)
-                test_frule(contract, 5.0 + 1.0im, 2.0 - 2.0im)
+                a = 5.0 + 1.0im
+                b = 2.0 - 2.0im
+
+                @test contract(a, b) == a * b
+                test_rrule(contract, a, b)
+                test_frule(contract, a, b)
             end
 
             # TODO test two different eltypes

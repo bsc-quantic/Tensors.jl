@@ -21,6 +21,7 @@ Tensor{T,N,A}(data::A, labels::NTuple{N,Symbol}, meta) where {T,N,A<:AbstractArr
     Tensor{T,N,A}(data, labels; meta...)
 
 Tensor(data::AbstractArray{T,0}; meta...) where {T} = Tensor(data, (); meta...)
+Tensor(data::Number; meta...) = Tensor(fill(data); meta...)
 
 Base.copy(t::Tensor) = Tensor(parent(t), labels(t); deepcopy(t.meta)...)
 

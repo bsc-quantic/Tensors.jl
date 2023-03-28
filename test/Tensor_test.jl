@@ -1,10 +1,21 @@
 @testset "Tensor" begin
     using Tensors: Tensor, labels, dim
 
-    @testset "Constructor" begin
-        tensor = Tensor(zeros(2, 2, 2), (:i, :j, :k))
-        @test labels(tensor) == (:i, :j, :k)
-        @test labels(Tensor(zeros(2, 2, 2), [:i, :j, :k])) == (:i, :j, :k)
+    @testset "Constructors" begin
+        @testset "Number" begin
+            tensor = Tensor(1.0, tags=Set(["TEST"]))
+            @test labels(tensor) == ()
+            @test parent(tensor) == fill(1.0)
+            @test hastag(tensor, "TEST")
+        end
+
+        @testset "Array" begin
+            data = ones(2, 2, 2)
+            tensor = Tensor(data, [:i, :j, :k])
+
+            @test labels(tensor) == (:i, :j, :k)
+            @test parent(tensor) === data
+        end
     end
 
     @testset "copy" begin

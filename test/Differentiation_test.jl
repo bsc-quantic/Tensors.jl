@@ -75,20 +75,34 @@
                 test_rrule(contract, 5.0 + 1.0im, 2.0 - 2.0im)
                 test_frule(contract, 5.0 + 1.0im, 2.0 - 2.0im)
             end
+
+            # TODO test two different eltypes
         end
 
         @testset "[Number-Tensor product]" begin
-            b = Tensor(rand(2, 2), (:i, :j))
-            z = 1.0 + 1im
+            @testset "T=Float" begin
+                a = 5.0
+                b = Tensor(rand(2, 2), (:i, :j))
 
-            test_frule(contract, 5.0, b)
-            test_rrule(contract, 5.0, b)
+                test_frule(contract, a, b)
+                test_frule(contract, b, a)
 
-            # TODO fix these tests
-            # test_frule(contract, z, b)
-            # test_frule(contract, b, z)
-            # test_rrule(contract, z, b)
-            # test_rrule(contract, b, z)
+                test_rrule(contract, a, b)
+                test_rrule(contract, b, a)
+            end
+
+            @testset "T=Complex" begin
+                a = 1.0 + 1im
+                b = Tensor(rand(ComplexF64, 2, 2), (:i, :j))
+
+                test_frule(contract, a, b)
+                test_frule(contract, b, a)
+
+                test_rrule(contract, a, b)
+                test_rrule(contract, b, a)
+            end
+
+            # TODO test two different eltypes
         end
 
         @testset "[adjoint]" begin

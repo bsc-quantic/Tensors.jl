@@ -19,9 +19,10 @@ function contract(a::Tensor, b::Tensor, i=(∩(labels(a), labels(b))))
     return Tensor(data, ic)
 end
 
-contract(a::AbstractArray{T,0}, b::Tensor{T}) where {T} = contract(Tensor(a), b)
-contract(a::Tensor{T}, b::AbstractArray{T,0}) where {T} = contract(a, Tensor(b))
-contract(a::AbstractArray{<:Any,0}, b::AbstractArray{<:Any,0}) = contract(Tensor(a), Tensor(b))
+contract(a::Union{T,AbstractArray{T,0}}, b::Tensor{T}) where {T} = contract(Tensor(a), b)
+contract(a::Tensor{T}, b::Union{T,AbstractArray{T,0}}) where {T} = contract(a, Tensor(b))
+contract(a::AbstractArray{<:Any,0}, b::AbstractArray{<:Any,0}) = contract(Tensor(a), Tensor(b)) |> only
+contract(a::Number, b::Number) = contract(fill(a), fill(b))
 
 """
     *(::Tensor, ::Tensor)

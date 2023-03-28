@@ -150,3 +150,5 @@ function Base.view(t::Tensor, inds::Pair{Symbol,<:Any}...)
         Tensor(data, labels; t.meta...)
     end
 end
+
+Base.adjoint(t::Tensor) = Tensor(conj(parent(t)), labels(t); t.meta...)

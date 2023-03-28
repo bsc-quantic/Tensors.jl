@@ -129,4 +129,30 @@
         tensor = Tensor(data, (:i, :j, :k))
         @test all(x -> ==(x...), zip(tensor, data))
     end
+
+    @testset "adjoint" begin
+        @testset "Vector" begin
+            data = rand(Complex{Float64}, 2)
+            tensor = Tensor(data, (:i,); test="TEST")
+
+            @test adjoint(tensor) |> labels == labels(tensor)
+            @test adjoint(tensor) |> ndims == 1
+            @test adjoint(tensor).meta == tensor.meta
+
+            @test isapprox(only(tensor' * tensor), data' * data)
+        end
+
+        @testset "Matrix" begin
+            using LinearAlgebra: tr
+
+            data = rand(Complex{Float64}, 2, 2)
+            tensor = Tensor(data, (:i, :j); test="TEST")
+
+            @test adjoint(tensor) |> labels == labels(tensor)
+            @test adjoint(tensor) |> ndims == 2
+            @test adjoint(tensor).meta == tensor.meta
+
+            @test isapprox(only(tensor' * tensor), tr(data' * data))
+        end
+    end
 end

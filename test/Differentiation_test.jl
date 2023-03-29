@@ -62,6 +62,11 @@
         # end
     end
 
+    @testset "only" begin
+        test_frule(only, Tensor(1.0))
+        test_frule(only, Tensor(1.0))
+    end
+
     @testset "contract" begin
         @testset "[Number-Number product]" begin
             @testset "T=Float" begin

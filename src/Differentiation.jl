@@ -34,6 +34,19 @@ function ChainRulesCore.rrule(f::Type{<:Tensor}, data, labels; meta...)
     return t, Tensor_pullback
 end
 
+# only
+function ChainRulesCore.frule((_, Δtensor), f::typeof(only), tensor::Tensor)
+    result = f(tensor)
+    Δresult = f(Δtensor)
+    return result, Δresult
+end
+
+function ChainRulesCore.rrule(f::typeof(only), tensor::Tensor)
+    result = f(tensor)
+    only_pullback(Δtensor) = (NoTangent(), f(Δtensor))
+    return result, only_pullback
+end
+
 # contract methods
 function ChainRulesCore.frule((_, ȧ, ḃ)::NTuple{3,Any}, ::typeof(contract), a, b)
     c = contract(a, b)

@@ -6,3 +6,10 @@ using Tensors
     include("Metadata_test.jl")
     include("Differentiation_test.jl")
 end
+
+if haskey(ENV, "ENABLE_AQUA_TESTS")
+    @testset "Aqua" verbose = true begin
+        using Aqua
+        Aqua.test_all(Tensors, ambiguities=false)
+    end
+end

@@ -2,9 +2,7 @@
     using Tensors: Tensor, contract
     using LinearAlgebra
     using ChainRulesCore: ProjectTo
-
     using ChainRulesTestUtils
-    ChainRulesTestUtils.ChainRulesCore.debug_mode() = true
 
     # fix for FiniteDifferences: `FiniteDifferences.to_vec` fails for Tensor{T,0}
     function ChainRulesTestUtils.FiniteDifferences.to_vec(x::T) where {T<:Tensor}

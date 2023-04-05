@@ -51,10 +51,6 @@ function LinearAlgebra.svd(t::Tensor, left_inds=(); kwargs...)
 
     # permute array
     tensor = permutedims(t, (left_inds..., right_inds...))
-    println(parent(tensor))
-    println(left_inds)
-    println(right_inds)
-
     data = reshape(parent(tensor), prod(i -> size(t, i), left_inds), prod(i -> size(t, i), right_inds))
 
     # compute SVD

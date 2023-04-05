@@ -1,5 +1,6 @@
 using OMEinsum
 using LinearAlgebra
+using UUIDs: uuid4
 
 """
     contract(::Tensor, ::Tensor[, i])
@@ -33,8 +34,12 @@ Base.:*(a::Tensor, b::Tensor) = contract(a, b)
 Base.:*(a::Tensor, b) = contract(a, b)
 Base.:*(a, b::Tensor) = contract(a, b)
 
-function LinearAlgebra.svd(t::Tensor; left_inds=(), kwargs...)
-    if any(∉(labels(t)), left_inds)
+LinearAlgebra.svd(t::Tensor; left_inds=(), kwargs...) = svd(t, left_inds; kwargs...)
+
+function LinearAlgebra.svd(t::Tensor, left_inds; kwargs...)
+    if isempty(left_inds)
+        throw(ErrorException("no left-indices in SVD factorization"))
+    elseif any(∉(labels(t)), left_inds)
         # TODO better error exception and checks
         throw(ErrorException("all left-indices must be in $(labels(t))"))
     end
@@ -50,12 +55,12 @@ function LinearAlgebra.svd(t::Tensor; left_inds=(), kwargs...)
     data = reshape(parent(tensor), prod(i -> size(t, i), left_inds), prod(i -> size(t, i), right_inds))
 
     # compute SVD
-    U, s, Vt = svd(data; kwargs...)
+    U, s, V = svd(data; kwargs...)
 
     # tensorify results
     U = reshape(U, size.((t,), left_inds)..., size(U, 2))
     s = Diagonal(s)
-    Vt = reshape(Vt, size.((t,), right_inds)..., size(Vt, 2))
+    Vt = reshape(V', size.((t,), right_inds)..., size(V, 2))
 
     vlind = Symbol(uuid4())
     vrind = Symbol(uuid4())

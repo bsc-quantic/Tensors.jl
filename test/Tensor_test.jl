@@ -146,8 +146,10 @@
 
         data = rand(2, 2, 2)
         tensor = Tensor(data, (:i, :j, :k))
-        @test_throws ErrorException svd(tensor) # Throw exception if left_inds is not provided
-        @test_throws ErrorException svd(tensor, (:l,)) # Throw expcetion if left_inds ∉ labels(tensor)
+        # Throw exception if left_inds is not provided
+        @test_throws ErrorException svd(tensor)
+        # Throw expcetion if left_inds ∉ labels(tensor)
+        @test_throws ErrorException svd(tensor, (:l,))
 
         U, s, Vt = svd(tensor, labels(tensor)[1:2])
         @test labels(U)[1:2] == labels(tensor)[1:2]

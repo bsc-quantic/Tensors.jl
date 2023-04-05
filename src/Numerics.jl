@@ -34,8 +34,9 @@ Base.:*(a::Tensor, b::Tensor) = contract(a, b)
 Base.:*(a::Tensor, b) = contract(a, b)
 Base.:*(a, b::Tensor) = contract(a, b)
 
-function LinearAlgebra.svd(t::Tensor, left_inds=(); kwargs...)
+LinearAlgebra.svd(t::Tensor; left_inds=(), kwargs...) = svd(tensor, left_inds; kwargs...)
 
+function LinearAlgebra.svd(t::Tensor, left_inds; kwargs...)
     if isempty(left_inds)
         throw(ErrorException("no left-indices in SVD factorization"))
     elseif any(∉(labels(t)), left_inds)

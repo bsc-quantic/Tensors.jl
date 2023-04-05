@@ -5,6 +5,7 @@ using Tensors
     include("Tensor_test.jl")
     include("Metadata_test.jl")
     include("Differentiation_test.jl")
+    include("Numerics_test.jl")
 end
 
 if haskey(ENV, "ENABLE_AQUA_TESTS")

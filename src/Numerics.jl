@@ -54,12 +54,12 @@ function LinearAlgebra.svd(t::Tensor, left_inds=(); kwargs...)
     data = reshape(parent(tensor), prod(i -> size(t, i), left_inds), prod(i -> size(t, i), right_inds))
 
     # compute SVD
-    U, s, Vt = svd(data; kwargs...)
+    U, s, V = svd(data; kwargs...)
 
     # tensorify results
     U = reshape(U, size.((t,), left_inds)..., size(U, 2))
     s = Diagonal(s)
-    Vt = reshape(Vt', size.((t,), right_inds)..., size(Vt, 2))
+    Vt = reshape(V', size.((t,), right_inds)..., size(Vt, 2))
 
     vlind = Symbol(uuid4())
     vrind = Symbol(uuid4())

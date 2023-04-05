@@ -1,5 +1,6 @@
 using OMEinsum
 using LinearAlgebra
+using UUIDs: uuid4
 
 """
     contract(::Tensor, ::Tensor[, i])
@@ -33,8 +34,11 @@ Base.:*(a::Tensor, b::Tensor) = contract(a, b)
 Base.:*(a::Tensor, b) = contract(a, b)
 Base.:*(a, b::Tensor) = contract(a, b)
 
-function LinearAlgebra.svd(t::Tensor; left_inds=(), kwargs...)
-    if any(∉(labels(t)), left_inds)
+function LinearAlgebra.svd(t::Tensor, left_inds=(); kwargs...)
+
+    if isempty(left_inds)
+        throw(ErrorException("no left-indices in SVD factorization"))
+    elseif any(∉(labels(t)), left_inds)
         # TODO better error exception and checks
         throw(ErrorException("all left-indices must be in $(labels(t))"))
     end
@@ -47,6 +51,10 @@ function LinearAlgebra.svd(t::Tensor; left_inds=(), kwargs...)
 
     # permute array
     tensor = permutedims(t, (left_inds..., right_inds...))
+    println(parent(tensor))
+    println(left_inds)
+    println(right_inds)
+
     data = reshape(parent(tensor), prod(i -> size(t, i), left_inds), prod(i -> size(t, i), right_inds))
 
     # compute SVD

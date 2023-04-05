@@ -59,7 +59,7 @@ function LinearAlgebra.svd(t::Tensor, left_inds=(); kwargs...)
     # tensorify results
     U = reshape(U, size.((t,), left_inds)..., size(U, 2))
     s = Diagonal(s)
-    Vt = reshape(V', size.((t,), right_inds)..., size(Vt, 2))
+    Vt = reshape(V', size.((t,), right_inds)..., size(V, 2))
 
     vlind = Symbol(uuid4())
     vrind = Symbol(uuid4())

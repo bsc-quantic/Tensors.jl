@@ -7,7 +7,7 @@
         data = rand(2, 2, 2)
         tensor = Tensor(data, (:i, :j, :k))
         # Throw exception if left_inds is not provided
-        @test_throws UndefVarError svd(tensor)
+        @test_throws ErrorException svd(tensor)
         # Throw expcetion if left_inds ∉ labels(tensor)
         @test_throws ErrorException svd(tensor, (:l,))
 

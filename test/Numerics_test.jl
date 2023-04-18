@@ -39,7 +39,12 @@
 
         @testset "Accuracy Test" begin
             U, s, V = svd(tensor, labels(tensor)[1:2])
-            @test isapprox(U * s * V, data)
+            @test U * s * V ≈ tensor
+
+            data2 = rand(2, 4, 6, 8)
+            tensor2 = Tensor(data2, (:i, :j, :k, :l))
+            U2, s2, V2 = svd(tensor2, labels(tensor2)[1:2])
+            @test U2 * s2 * V2 ≈ tensor2
         end
     end
 end

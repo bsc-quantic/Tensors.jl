@@ -153,3 +153,9 @@ function Base.view(t::Tensor, inds::Pair{Symbol,<:Any}...)
 end
 
 Base.adjoint(t::Tensor) = Tensor(conj(parent(t)), labels(t); t.meta...)
+
+Base.transpose(t::Tensor{T,1,A}) where {T, A<:AbstractArray{T, 1}} =
+    permutedims(t, (1,))
+
+Base.transpose(t::Tensor{T,2,A}) where {T, A<:AbstractArray{T, 2}} =
+    permutedims(t, (2, 1))

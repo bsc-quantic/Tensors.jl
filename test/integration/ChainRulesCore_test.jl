@@ -1,4 +1,4 @@
-@testset "ChainRules" begin
+@testset "ChainRulesCore" begin
     using Tensors: Tensor, contract
     using LinearAlgebra
     using ChainRulesCore: ProjectTo

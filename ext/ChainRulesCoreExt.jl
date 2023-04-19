@@ -1,3 +1,11 @@
+module ChainRulesCoreExt
+
+if isdefined(Base, :get_extension)
+    using Tensors
+else
+    using ..Tensors
+end
+
 using ChainRulesCore
 
 # projections
@@ -103,3 +111,5 @@ end
 #     only_pullback(d̄) = (NoTangent(), Tensor(fill(d̄), labels(t); t.meta...))
 #     return data, only_pullback
 # end
+
+end

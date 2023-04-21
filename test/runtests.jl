@@ -1,5 +1,6 @@
 using Test
 using Tensors
+using OMEinsum
 
 @testset "Unit tests" verbose = true begin
     include("Tensor_test.jl")

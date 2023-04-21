@@ -50,7 +50,6 @@
 
     @testset "contract" begin
         using Tensors: Tensor, contract
-        using OMEinsum: ein
 
         @testset "matrix multiplication" begin
             A = Tensor(rand(2, 3), (:i, :j))

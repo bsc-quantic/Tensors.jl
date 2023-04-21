@@ -50,6 +50,7 @@
 
     @testset "contract" begin
         using Tensors: Tensor, contract
+        using OMEinsum: ein
 
         @testset "Tensor inner product" begin
             A = Tensor(rand(2, 3), (:i, :j))

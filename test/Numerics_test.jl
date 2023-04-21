@@ -1,5 +1,4 @@
 @testset "Numerics" begin
-    using Tensors: Tensor
     using LinearAlgebra
 
     @testset "svd" begin

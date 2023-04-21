@@ -1,6 +1,4 @@
 @testset "Tensor" begin
-    using Tensors: Tensor, labels, dim
-
     @testset "Constructors" begin
         @testset "Number" begin
             tensor = Tensor(1.0, tags=Set(["TEST"]))

@@ -51,7 +51,7 @@
     @testset "contract" begin
         using Tensors: Tensor, contract
 
-        @testset "Basic Functionality" begin
+        @testset "Tensor inner product" begin
             A = Tensor(rand(2, 3), (:i, :j))
             B = Tensor(rand(3, 4), (:j, :k))
 
@@ -73,7 +73,7 @@
             @test C ≈ C_ein
         end
 
-        @testset "Scalar and Tensor multiplication" begin
+        @testset "Scalar and Tensor" begin
             A = Tensor(rand(2, 2), (:i, :j))
             scalar = 2.0
 
@@ -88,7 +88,7 @@
             @test D ≈ scalar * A.data
         end
 
-        @testset "Contraction Over Specific Indices" begin
+        @testset "Specific indices" begin
             A = Tensor(rand(2, 3, 4), (:i, :j, :k))
             B = Tensor(rand(4, 5, 3), (:k, :l, :j))
 
@@ -107,7 +107,7 @@
             @test C ≈ C_ein
         end
 
-        @testset "Complex Contraction" begin
+        @testset "Complex numbers" begin
             A = Tensor(rand(Complex{Float64}, 2, 3, 4), (:i, :j, :k))
             B = Tensor(rand(Complex{Float64}, 4, 5, 3), (:k, :l, :j))
 

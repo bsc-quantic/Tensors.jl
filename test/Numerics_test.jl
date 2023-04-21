@@ -52,7 +52,7 @@
         using Tensors: Tensor, contract
         using OMEinsum: ein
 
-        @testset "Tensor inner product" begin
+        @testset "matrix multiplication" begin
             A = Tensor(rand(2, 3), (:i, :j))
             B = Tensor(rand(3, 4), (:j, :k))
 
@@ -63,7 +63,7 @@
             @test C ≈ A * B ≈ C_mat
         end
 
-        @testset "Outer product test" begin
+        @testset "outer product" begin
             A = Tensor(rand(2, 2), (:i, :j))
             B = Tensor(rand(2, 2), (:k, :l))
 
@@ -74,7 +74,7 @@
             @test C ≈ C_ein
         end
 
-        @testset "Scalar and Tensor" begin
+        @testset "scale" begin
             A = Tensor(rand(2, 2), (:i, :j))
             scalar = 2.0
 
@@ -89,7 +89,7 @@
             @test D ≈ scalar * A.data
         end
 
-        @testset "Specific indices" begin
+        @testset "manual" begin
             A = Tensor(rand(2, 3, 4), (:i, :j, :k))
             B = Tensor(rand(4, 5, 3), (:k, :l, :j))
 

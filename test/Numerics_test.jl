@@ -1,9 +1,8 @@
 @testset "Numerics" begin
     using Tensors: Tensor
+    using LinearAlgebra
 
     @testset "svd" begin
-        using LinearAlgebra
-
         data = rand(2, 2, 2)
         tensor = Tensor(data, (:i, :j, :k))
 

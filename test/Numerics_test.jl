@@ -56,7 +56,7 @@
             B = Tensor(rand(3, 4), (:j, :k))
 
             C = contract(A, B)
-            C_mat = A.data * B.data
+            C_mat = parent(A) * parent(B)
             @test labels(C) == (:i, :k)
             @test size(C) == (2, 4) == size(C_mat)
             @test C ≈ A * B ≈ C_mat
@@ -91,12 +91,12 @@
             C = contract(A, scalar)
             @test labels(C) == (:i, :j)
             @test size(C) == (2, 2)
-            @test C ≈ A.data * scalar
+            @test C ≈ parent(A) * scalar
 
             D = contract(scalar, A)
             @test labels(D) == (:i, :j)
             @test size(D) == (2, 2)
-            @test D ≈ scalar * A.data
+            @test D ≈ scalar * parent(A)
         end
 
         @testset "manual" begin

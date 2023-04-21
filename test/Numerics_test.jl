@@ -56,10 +56,10 @@
             B = Tensor(rand(3, 4), (:j, :k))
 
             C = contract(A, B)
-            C_mat =
+            C_mat = A.data * B.data
             @test labels(C) == (:i, :k)
-            @test size(C) == (2, 4)
-            @test C ≈ A * B ≈ A.data * B.data
+            @test size(C) == (2, 4) == size(C_mat)
+            @test C ≈ A * B ≈ C_mat
         end
 
         @testset "Outer product test" begin

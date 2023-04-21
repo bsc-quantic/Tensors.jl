@@ -106,17 +106,17 @@
             @test labels(C) == (:i, :k, :l)
             @test size(C) == (2, 4, 5) == size(C_ein)
             @test C ≈ C_ein
-        end
 
-        @testset "Complex numbers" begin
-            A = Tensor(rand(Complex{Float64}, 2, 3, 4), (:i, :j, :k))
-            B = Tensor(rand(Complex{Float64}, 4, 5, 3), (:k, :l, :j))
+            @testset "Complex numbers" begin
+                A = Tensor(rand(Complex{Float64}, 2, 3, 4), (:i, :j, :k))
+                B = Tensor(rand(Complex{Float64}, 4, 5, 3), (:k, :l, :j))
 
-            C = contract(A, B, (:j, :k))
-            C_ein = ein"ijk, klj -> il"(A, B)
-            @test labels(C) == (:i, :l)
-            @test size(C) == (2, 5) == size(C_ein)
-            @test C ≈ C_ein
+                C = contract(A, B, (:j, :k))
+                C_ein = ein"ijk, klj -> il"(A, B)
+                @test labels(C) == (:i, :l)
+                @test size(C) == (2, 5) == size(C_ein)
+                @test C ≈ C_ein
+            end
         end
     end
 end

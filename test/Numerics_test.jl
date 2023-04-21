@@ -62,6 +62,17 @@
             @test C ≈ A * B ≈ C_mat
         end
 
+        @testset "inner product" begin
+            A = Tensor(rand(3, 4), (:i, :j))
+            B = Tensor(rand(4, 3), (:j, :i))
+
+            C = contract(A, B)
+            C_res = LinearAlgebra.tr(parent(A) * parent(B))
+            @test labels(C) == ()
+            @test size(C) == () == size(C_res)
+            @test only(C) ≈ C_res
+        end
+
         @testset "outer product" begin
             A = Tensor(rand(2, 2), (:i, :j))
             B = Tensor(rand(2, 2), (:k, :l))

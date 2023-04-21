@@ -7,10 +7,10 @@ using UUIDs: uuid4
 
 Perform tensor contraction operation.
 """
-function contract(a::Tensor, b::Tensor, i=(∩(labels(a), labels(b))))
+function contract(a::Tensor, b::Tensor; dims=(∩(labels(a), labels(b))))
     ia = labels(a)
     ib = labels(b)
-    i = ∩(i, ia, ib)
+    i = ∩(dims, ia, ib)
 
     ic = tuple(setdiff(ia ∪ ib, i isa Base.AbstractVecOrTuple ? i : (i,))...)
 

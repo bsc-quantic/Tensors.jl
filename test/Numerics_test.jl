@@ -102,14 +102,14 @@
             B = Tensor(rand(4, 5, 3), (:k, :l, :j))
 
             # Contraction of all common indices
-            C = contract(A, B, (:j, :k))
+            C = contract(A, B, dims=(:j, :k))
             C_ein = ein"ijk, klj -> il"(A, B)
             @test labels(C) == (:i, :l)
             @test size(C) == (2, 5) == size(C_ein)
             @test C ≈ C_ein
 
             # Contraction of not all common indices
-            C = contract(A, B, (:j,))
+            C = contract(A, B, dims=(:j,))
             C_ein = ein"ijk, klj -> ikl"(A, B)
             @test labels(C) == (:i, :k, :l)
             @test size(C) == (2, 4, 5) == size(C_ein)
@@ -119,7 +119,7 @@
                 A = Tensor(rand(Complex{Float64}, 2, 3, 4), (:i, :j, :k))
                 B = Tensor(rand(Complex{Float64}, 4, 5, 3), (:k, :l, :j))
 
-                C = contract(A, B, (:j, :k))
+                C = contract(A, B, dims=(:j, :k))
                 C_ein = ein"ijk, klj -> il"(A, B)
                 @test labels(C) == (:i, :l)
                 @test size(C) == (2, 5) == size(C_ein)

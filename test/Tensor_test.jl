@@ -166,4 +166,30 @@
             @test isapprox(only(tensor' * tensor), tr(data' * data))
         end
     end
+
+    @testset "transpose" begin
+        @testset "Vector" begin
+            data = rand(Complex{Float64}, 2)
+            tensor = Tensor(data, (:i,); test="TEST")
+
+            @test transpose(tensor) |> labels == labels(tensor)
+            @test transpose(tensor) |> ndims == 1
+            @test transpose(tensor).meta == tensor.meta
+
+            @test isapprox(only(transpose(tensor) * tensor), transpose(data) * data)
+        end
+
+        @testset "Matrix" begin
+            using LinearAlgebra: tr
+
+            data = rand(Complex{Float64}, 2, 2)
+            tensor = Tensor(data, (:i, :j); test="TEST")
+
+            @test transpose(tensor) |> labels == (:j, :i)
+            @test transpose(tensor) |> ndims == 2
+            @test transpose(tensor).meta == tensor.meta
+
+            @test isapprox(only(transpose(tensor) * tensor), tr(transpose(data) * data))
+        end
+    end
 end

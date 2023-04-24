@@ -160,3 +160,14 @@ Base.transpose(t::Tensor{T,1,A}) where {T, A<:AbstractArray{T, 1}} =
 
 Base.transpose(t::Tensor{T,2,A}) where {T, A<:AbstractArray{T, 2}} =
     permutedims(t, (2, 1))
+
+function truncatedims(t::Tensor, dim::Union{Integer, Symbol}, end_ind::Integer)
+    if dim isa Symbol
+        dim = findfirst(==(dim), labels(t))
+    end
+
+    data = view(parent(t), ntuple(i -> i == dim ? (1:end_ind) : Colon(), ndims(t))...)
+    new_labels = labels(t)
+
+    return Tensor(data, new_labels; t.meta...)
+end

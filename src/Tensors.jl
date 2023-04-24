@@ -2,7 +2,7 @@ module Tensors
 
 include("Tensor.jl")
 export Tensor
-export labels, dim
+export labels, dim, truncatedims
 
 include("Metadata.jl")
 export tags, hastag, tag!, untag!

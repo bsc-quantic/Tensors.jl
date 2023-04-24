@@ -133,6 +133,21 @@
         end
     end
 
+    @testset "truncatedims" begin
+        data = rand(4, 4, 4)
+        tensor = Tensor(data, (:i, :j, :k))
+
+        truncated_tensor_1 = truncatedims(tensor, :j, 2)
+        @test truncated_tensor_1.labels == tensor.labels
+        @test size(truncated_tensor_1) == (4, 2, 4)
+
+        truncated_tensor_2 = truncatedims(tensor, 3, 3)
+        @test truncated_tensor_2.labels == tensor.labels
+        @test size(truncated_tensor_2) == (4, 4, 3)
+
+        @test_throws BoundsError truncatedims(tensor, :j, 5)
+    end
+
     @testset "iteration" begin
         data = rand(2, 2, 2)
         tensor = Tensor(data, (:i, :j, :k))

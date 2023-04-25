@@ -69,7 +69,7 @@ function Base.replace(t::Tensor, old_new::Pair{Symbol,Symbol}...)
         new_meta[:alias] = updated_aliases
     end
 
-    return Tensor(parent(t), new_labels; copy(new_meta)...)
+    return Tensor(parent(t), new_labels; new_meta...)
 end
 
 Base.parent(t::Tensor) = t.data

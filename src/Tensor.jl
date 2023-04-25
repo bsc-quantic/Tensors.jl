@@ -57,10 +57,10 @@ labels(t::Tensor) = t.labels
 function Base.replace(t::Tensor, old_new::Pair{Symbol,Symbol}...)
     new_labels = replace(labels(t), old_new...)
     new_meta = deepcopy(t.meta)
+    old_new_dict = Dict{Symbol, Symbol}(old_new)
 
-    if haskey(new_meta, :alias)
-        old_new_dict = Dict{Symbol, Symbol}(old_new)
-        new_meta[:alias] = Dict(k => get(old_new_dict, v, v) for (k, v) in new_meta[:alias])
+    haskey(new_meta, :alias) && map!(values(new_meta[:alias])) do i
+        get(old_new_dict, i, i)
     end
 
     return Tensor(parent(t), new_labels; new_meta...)

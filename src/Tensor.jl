@@ -53,8 +53,24 @@ Base.isequal(a::Tensor, b::Tensor) = allequal(labels.((a, b))) && allequal(paren
 
 labels(t::Tensor) = t.labels
 
-Base.replace(t::Tensor, old_new::Pair{Symbol,Symbol}...) =
-    Tensor(parent(t), replace(labels(t), old_new...); copy(t.meta)...)
+# NOTE: `replace` does not currenly support cyclic replacements
+function Base.replace(t::Tensor, old_new::Pair{Symbol,Symbol}...)
+    new_labels = replace(labels(t), old_new...)
+    new_meta = deepcopy(t.meta)
+
+    if haskey(new_meta, :alias)
+        full_mapping = Dict{Symbol, Symbol}(old_new)
+
+        updated_aliases = Dict{Symbol, Symbol}()
+        for (key, value) in new_meta[:alias]
+            updated_value = value in keys(full_mapping) ? full_mapping[value] : value
+            updated_aliases[key] = updated_value
+        end
+        new_meta[:alias] = updated_aliases
+    end
+
+    return Tensor(parent(t), new_labels; copy(new_meta)...)
+end
 
 Base.parent(t::Tensor) = t.data
 parenttype(::Type{Tensor{T,N,A}}) where {T,N,A} = A

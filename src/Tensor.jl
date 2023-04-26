@@ -53,8 +53,18 @@ Base.isequal(a::Tensor, b::Tensor) = allequal(labels.((a, b))) && allequal(paren
 
 labels(t::Tensor) = t.labels
 
-Base.replace(t::Tensor, old_new::Pair{Symbol,Symbol}...) =
-    Tensor(parent(t), replace(labels(t), old_new...); copy(t.meta)...)
+# NOTE: `replace` does not currenly support cyclic replacements
+function Base.replace(t::Tensor, old_new::Pair{Symbol,Symbol}...)
+    new_labels = replace(labels(t), old_new...)
+    new_meta = deepcopy(t.meta)
+    old_new_dict = Base.ImmutableDict(old_new...)
+
+    haskey(new_meta, :alias) && map!(values(new_meta[:alias])) do i
+        get(old_new_dict, i, i)
+    end
+
+    return Tensor(parent(t), new_labels; new_meta...)
+end
 
 Base.parent(t::Tensor) = t.data
 parenttype(::Type{Tensor{T,N,A}}) where {T,N,A} = A

@@ -42,12 +42,21 @@
     end
 
     @testset "Base.replace" begin
+        # no :alias in meta
         tensor = Tensor(zeros(2, 2, 2), (:i, :j, :k))
         @test labels(replace(tensor, :i => :u, :j => :v, :k => :w)) == (:u, :v, :w)
         @test parent(replace(tensor, :i => :u, :j => :v, :k => :w)) === parent(tensor)
 
         @test labels(replace(tensor, :a => :u, :b => :v, :c => :w)) == (:i, :j, :k)
         @test parent(replace(tensor, :a => :u, :b => :v, :c => :w)) === parent(tensor)
+
+        # :alias in meta
+        tensor = Tensor(zeros(2, 2, 2), (:i, :j, :k); alias=Dict(:left => :i, :right => :j, :up => :k))
+
+        replaced_tensor = replace(tensor, :i => :u, :j => :v, :k => :w)
+        @test labels(replaced_tensor) == (:u, :v, :w)
+        @test parent(replaced_tensor) === parent(tensor)
+        @test replaced_tensor.meta[:alias] == Dict(:left => :u, :right => :v, :up => :w)
     end
 
     @testset "dim" begin

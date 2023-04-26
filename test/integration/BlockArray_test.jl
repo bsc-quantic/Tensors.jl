@@ -56,7 +56,7 @@
             @test Array(parent(contracted_block_tensor)) ≈ parent(contracted_tensor)
         end
 
-        @testset "contract block-unblocked tensors" begin
+        @testset "block-unblock" begin
             data1, data2 = rand(4, 4), rand(4, 4)
             block_sizes = ([3, 1], [2, 2])
             block_array = BlockArray(data2, block_sizes...)

@@ -1,5 +1,6 @@
 [deps]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+BlockArrays = "8e7c35d0-a365-5155-bbbb-fb81a777f24e"
 ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 ChainRulesTestUtils = "cdddcdb0-9152-4a09-a978-84456f9df70a"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"

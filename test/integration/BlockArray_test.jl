@@ -35,39 +35,41 @@
         @test Array(parent(permuted_block_tensor)) ≈ parent(permuted_tensor)
     end
 
-    @testset "contract block tensors" begin
-        data1, data2 = rand(4, 4), rand(4, 4)
-        block_sizes1, block_sizes2 = ([3, 1], [2, 2]), ([1, 3], [2, 2])
-        block_array1 = BlockArray(data1, block_sizes1...)
-        block_array2 = BlockArray(data2, block_sizes2...)
+    @testset "contract" begin
+        @testset "contract block tensors" begin
+            data1, data2 = rand(4, 4), rand(4, 4)
+            block_sizes1, block_sizes2 = ([3, 1], [2, 2]), ([1, 3], [2, 2])
+            block_array1 = BlockArray(data1, block_sizes1...)
+            block_array2 = BlockArray(data2, block_sizes2...)
 
-        tensor1 = Tensor(data1, [:i, :j])
-        tensor2 = Tensor(data2, [:j, :k])
-        block_tensor1 = Tensor(block_array1, [:i, :j])
-        block_tensor2 = Tensor(block_array2, [:j, :k])
+            tensor1 = Tensor(data1, [:i, :j])
+            tensor2 = Tensor(data2, [:j, :k])
+            block_tensor1 = Tensor(block_array1, [:i, :j])
+            block_tensor2 = Tensor(block_array2, [:j, :k])
 
-        contracted_tensor = contract(tensor1, tensor2)
-        contracted_block_tensor = contract(block_tensor1, block_tensor2)
+            contracted_tensor = contract(tensor1, tensor2)
+            contracted_block_tensor = contract(block_tensor1, block_tensor2)
 
-        @test parent(contracted_block_tensor) isa BlockArray
-        @test contracted_block_tensor |> labels == (:i, :k)
-        @test contracted_block_tensor |> blocksizes == ([3, 1], [2, 2])
-        @test Array(parent(contracted_block_tensor)) ≈ parent(contracted_tensor)
-    end
+            @test parent(contracted_block_tensor) isa BlockArray
+            @test contracted_block_tensor |> labels == (:i, :k)
+            @test contracted_block_tensor |> blocksizes == ([3, 1], [2, 2])
+            @test Array(parent(contracted_block_tensor)) ≈ parent(contracted_tensor)
+        end
 
-    @testset "contract block-unblocked tensors" begin
-        data1, data2 = rand(4, 4), rand(4, 4)
-        block_sizes = ([3, 1], [2, 2])
-        block_array = BlockArray(data2, block_sizes...)
+        @testset "contract block-unblocked tensors" begin
+            data1, data2 = rand(4, 4), rand(4, 4)
+            block_sizes = ([3, 1], [2, 2])
+            block_array = BlockArray(data2, block_sizes...)
 
-        tensor = Tensor(data1, [:i, :j])
-        block_tensor = Tensor(block_array, [:j, :k])
+            tensor = Tensor(data1, [:i, :j])
+            block_tensor = Tensor(block_array, [:j, :k])
 
-        contracted_tensor = contract(tensor, block_tensor)
+            contracted_tensor = contract(tensor, block_tensor)
 
-        @test contracted_tensor |> labels == (:i, :k)
-        @test (contracted_tensor |> parent |> blocksizes)[2] == [2, 2]
-        @test Array(parent(contracted_tensor)) ≈ parent(contract(tensor, Tensor(data2, [:j, :k])))
+            @test contracted_tensor |> labels == (:i, :k)
+            @test (contracted_tensor |> parent |> blocksizes)[2] == [2, 2]
+            @test Array(parent(contracted_tensor)) ≈ parent(contract(tensor, Tensor(data2, [:j, :k])))
+        end
     end
 
     # It seems that svd is not yet supported for BlockArray:

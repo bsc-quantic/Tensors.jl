@@ -57,7 +57,7 @@ labels(t::Tensor) = t.labels
 function Base.replace(t::Tensor, old_new::Pair{Symbol,Symbol}...)
     new_labels = replace(labels(t), old_new...)
     new_meta = deepcopy(t.meta)
-    old_new_dict = Dict{Symbol, Symbol}(old_new)
+    old_new_dict = Base.ImmutableDict(old_new...)
 
     haskey(new_meta, :alias) && map!(values(new_meta[:alias])) do i
         get(old_new_dict, i, i)

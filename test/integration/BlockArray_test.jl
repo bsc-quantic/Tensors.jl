@@ -36,7 +36,7 @@
     end
 
     @testset "contract" begin
-        @testset "contract block tensors" begin
+        @testset "block-block" begin
             data1, data2 = rand(4, 4), rand(4, 4)
             block_sizes1, block_sizes2 = ([3, 1], [2, 2]), ([1, 3], [2, 2])
             block_array1 = BlockArray(data1, block_sizes1...)

@@ -72,20 +72,20 @@
 
     # It seems that svd is not yet supported for BlockArray:
     # https://github.com/JuliaArrays/BlockArrays.jl/issues/131
-    @testset "svd" begin
-        data = rand(4, 4, 4)
-        block_sizes = ([2, 2], [1, 3], [3, 1])
-        block_array = BlockArray(data, block_sizes...)
-        indices = (:i, :j, :k)
+    # @testset "svd" begin
+    #     data = rand(4, 4, 4)
+    #     block_sizes = ([2, 2], [1, 3], [3, 1])
+    #     block_array = BlockArray(data, block_sizes...)
+    #     indices = (:i, :j, :k)
 
-        tensor = Tensor(data, indices)
-        block_tensor = Tensor(block_array, indices)
+    #     tensor = Tensor(data, indices)
+    #     block_tensor = Tensor(block_array, indices)
 
-        U, S, V = svd(tensor; left_inds = (:i, :j))
-        U̅, S̅, V̅ = svd(block_tensor; left_inds = (:i, :j))
+    #     U, S, V = svd(tensor; left_inds = (:i, :j))
+    #     U̅, S̅, V̅ = svd(block_tensor; left_inds = (:i, :j))
 
-        @test Array(parent(U̅)) ≈ parent(U)
-        @test Array(parent(S̅)) ≈ parent(S)
-        @test Array(parent(V̅)) ≈ parent(V)
-    end
+    #     @test Array(parent(U̅)) ≈ parent(U)
+    #     @test Array(parent(S̅)) ≈ parent(S)
+    #     @test Array(parent(V̅)) ≈ parent(V)
+    # end
 end

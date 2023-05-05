@@ -100,7 +100,6 @@ function LinearAlgebra.qr(t::Tensor, left_inds; kwargs...)
     R = reshape(R, (size(R, 1), [size(t, ind) for ind in right_inds]...))
 
     qlind = Symbol(uuid4())
-    rlind = Symbol(uuid4())
 
     Q = Tensor(Q, (left_inds..., qlind))
     R = Tensor(R, (qlind, right_inds...))

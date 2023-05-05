@@ -171,6 +171,7 @@
                 tensor2_recovered = ein"ijk, klm -> ijlm"(Q2, R2)
                 @test tensor2_recovered ≈ tensor2
             end
+        end
     end
 
     @testset "qr" begin

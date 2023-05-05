@@ -71,3 +71,32 @@ function LinearAlgebra.svd(t::Tensor, left_inds; kwargs...)
 
     return U, s, Vt
 end
+
+LinearAlgebra.qr(t::Tensor; left_inds=(), kwargs...) = qr(t, left_inds; kwargs...)
+
+function LinearAlgebra.qr(t::Tensor, left_inds; kwargs...)
+    # TODO better error exception and checks
+    isempty(left_inds) && throw(ErrorException("no left-indices in QR factorization"))
+    left_inds ⊆ labels(t) || throw(ErrorException("all left-indices must be in $(labels(t))"))
+
+    right_inds = setdiff(labels(t), left_inds)
+    isempty(right_inds) && throw(ErrorException("no right-indices in QR factorization"))
+
+    # permute array
+    tensor = permutedims(t, (left_inds..., right_inds...))
+    data = reshape(parent(tensor), prod(i -> size(t, i), left_inds), prod(i -> size(t, i), right_inds))
+
+    # compute QR
+    Q, R = qr(data; kwargs...)
+
+    # tensorify results
+    Q = reshape(Q, ([size(t, ind) for ind in left_inds]..., size(Q, 2)))
+    R = reshape(R, (size(R, 1), [size(t, ind) for ind in right_inds]...))
+
+    qlind = Symbol(uuid4())
+
+    Q = Tensor(Q, (left_inds..., qlind))
+    R = Tensor(R, (qlind, right_inds...))
+
+    return Q, R
+end

@@ -162,7 +162,7 @@
 
         @testset "Accuracy Test" begin
             Q, R = qr(tensor, labels(tensor)[1:2])
-            Q_truncated = truncatedims(Q, labels(Q)[end], 2)
+            Q_truncated = view(Q, labels(Q)[end] => 1:2)
             tensor_recovered = ein"ijk, kl -> ijl"(Q_truncated, R)
             @test tensor_recovered ≈ tensor
 

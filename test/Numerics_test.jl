@@ -132,21 +132,23 @@
         data = rand(2, 2, 2)
         tensor = Tensor(data, (:i, :j, :k))
 
-        @testset "Error Handling Test" begin
+        @testset "[exceptions]" begin
             # Throw exception if left_inds is not provided
             @test_throws ErrorException qr(tensor)
             # Throw exception if left_inds ∉ labels(tensor)
             @test_throws ErrorException qr(tensor, (:l,))
+            # throw exception if no right-inds
+            @test_throws ErrorException qr(tensor, (:i,:j,:k))
         end
 
-        @testset "Labels Test" begin
+        @testset "labels" begin
             Q, R = qr(tensor, labels(tensor)[1:2])
             @test labels(Q)[1:2] == labels(tensor)[1:2]
             @test labels(Q)[3] == labels(R)[1]
             @test labels(R)[2] == labels(tensor)[3]
         end
 
-        @testset "Size Test" begin
+        @testset "size" begin
             Q, R = qr(tensor, labels(tensor)[1:2])
             # Q's new index size = min(prod(left_inds), prod(right_inds)).
             @test size(Q) == (2, 2, 4)
@@ -160,7 +162,7 @@
             @test size(R2) == (8, 6, 8)
         end
 
-        @testset "Accuracy Test" begin
+        @testset "[accuracy]" begin
             Q, R = qr(tensor, labels(tensor)[1:2])
             Q_truncated = view(Q, labels(Q)[end] => 1:2)
             tensor_recovered = ein"ijk, kl -> ijl"(Q_truncated, R)

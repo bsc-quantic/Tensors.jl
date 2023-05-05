@@ -75,18 +75,12 @@ end
 LinearAlgebra.qr(t::Tensor; left_inds=(), kwargs...) = qr(t, left_inds; kwargs...)
 
 function LinearAlgebra.qr(t::Tensor, left_inds; kwargs...)
-    if isempty(left_inds)
-        throw(ErrorException("no left-indices in QR factorization"))
-    elseif any(∉(labels(t)), left_inds)
-        # TODO better error exception and checks
-        throw(ErrorException("all left-indices must be in $(labels(t))"))
-    end
+    # TODO better error exception and checks
+    isempty(left_inds) && throw(ErrorException("no left-indices in QR factorization"))
+    left_inds ⊆ labels(t) || throw(ErrorException("all left-indices must be in $(labels(t))"))
 
     right_inds = setdiff(labels(t), left_inds)
-    if isempty(right_inds)
-        # TODO better error exception and checks
-        throw(ErrorException("no right-indices in QR factorization"))
-    end
+    isempty(right_inds) && throw(ErrorException("no right-indices in QR factorization"))
 
     # permute array
     tensor = permutedims(t, (left_inds..., right_inds...))

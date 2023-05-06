@@ -8,7 +8,7 @@ struct Tensor{T,N,A<:AbstractArray{T,N}} <: AbstractArray{T,N}
 
     function Tensor{T,N,A}(data::A, labels::NTuple{N,Symbol}; meta...) where {T,N,A<:AbstractArray{T,N}}
         meta = Dict{Symbol,Any}(meta...)
-        !haskey(meta, :tags) && (meta[:tags] = Set{String}())
+        haskey(meta, :tags) || (meta[:tags] = Set{String}())
 
         new{T,N,A}(data, labels, meta)
     end

@@ -13,6 +13,8 @@
 
             @test labels(tensor) == (:i, :j, :k)
             @test parent(tensor) === data
+
+            @test_throws DimensionMismatch Tensor(zeros(2, 3), (:i, :i))
         end
     end
 

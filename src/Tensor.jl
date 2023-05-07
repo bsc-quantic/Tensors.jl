@@ -1,6 +1,13 @@
 using Base: @propagate_inbounds
 using Base.Broadcast: Broadcasted, ArrayStyle
 
+# NOTE from https://stackoverflow.com/q/54652787
+function nonunique(x)
+    uniqueindexes = indexin(unique(x), x)
+    nonuniqueindexes = setdiff(1:length(x), uniqueindexes)
+    unique(x[nonuniqueindexes])
+end
+
 struct Tensor{T,N,A<:AbstractArray{T,N}} <: AbstractArray{T,N}
     data::A
     labels::NTuple{N,Symbol}
@@ -9,6 +16,8 @@ struct Tensor{T,N,A<:AbstractArray{T,N}} <: AbstractArray{T,N}
     function Tensor{T,N,A}(data::A, labels::NTuple{N,Symbol}; meta...) where {T,N,A<:AbstractArray{T,N}}
         meta = Dict{Symbol,Any}(meta...)
         haskey(meta, :tags) || (meta[:tags] = Set{String}())
+        all(i -> allequal(Iterators.map(dim -> size(data, dim), findall(==(i), labels))), nonunique(collect(labels))) ||
+            throw(DimensionMismatch("nonuniform size of repeated indices"))
 
         new{T,N,A}(data, labels, meta)
     end

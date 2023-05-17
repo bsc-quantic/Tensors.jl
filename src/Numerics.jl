@@ -74,7 +74,7 @@ end
 
 LinearAlgebra.qr(t::Tensor; left_inds=(), kwargs...) = qr(t, left_inds; kwargs...)
 
-function LinearAlgebra.qr(t::Tensor, left_inds; kwargs...)
+function LinearAlgebra.qr(t::Tensor, left_inds; virtualind::Symbol=Symbol(uuid4()), kwargs...)
     # TODO better error exception and checks
     isempty(left_inds) && throw(ErrorException("no left-indices in QR factorization"))
     left_inds ⊆ labels(t) || throw(ErrorException("all left-indices must be in $(labels(t))"))
@@ -93,10 +93,8 @@ function LinearAlgebra.qr(t::Tensor, left_inds; kwargs...)
     Q = reshape(Q, ([size(t, ind) for ind in left_inds]..., size(Q, 2)))
     R = reshape(R, (size(R, 1), [size(t, ind) for ind in right_inds]...))
 
-    qlind = Symbol(uuid4())
-
-    Q = Tensor(Q, (left_inds..., qlind))
-    R = Tensor(R, (qlind, right_inds...))
+    Q = Tensor(Q, (left_inds..., virtualind))
+    R = Tensor(R, (virtualind, right_inds...))
 
     return Q, R
 end

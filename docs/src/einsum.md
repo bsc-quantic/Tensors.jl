@@ -28,12 +28,6 @@ U_i = V_{ii}
 C_i = A \boxtimes B = A_i B_i
 ```
 
-### Inner or scalar product
-
-```math
-C = A \cdot B = \sum_i A_i B_i
-```
-
 ### Outer or tensor product
 
 ```math
@@ -46,6 +40,12 @@ C_{ij} = A \otimes B = A_i B_j
 
 ```math
 U = \sum_i V_{ii}
+```
+
+### Inner or scalar product
+
+```math
+C = A \cdot B = \sum_i A_i B_i
 ```
 
 ### Matrix multiplication

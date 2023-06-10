@@ -10,6 +10,8 @@ export tags, hastag, tag!, untag!
 include("Numerics.jl")
 export contract
 
+include("Einsum.jl")
+
 if !isdefined(Base, :get_extension)
     using Requires
 end

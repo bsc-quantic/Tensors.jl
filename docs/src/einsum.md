@@ -25,7 +25,7 @@ U_i = V_{ii}
 ### Hadamard or element-wise product
 
 ```math
-C_i = A \boxtimes B = A_i B_i
+C_i = A \odot B = A_i B_i
 ```
 
 ### Outer or tensor product

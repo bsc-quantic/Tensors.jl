@@ -1,4 +1,4 @@
-module ChainRulesCoreExt
+module TensorsChainRulesCoreExt
 
 if isdefined(Base, :get_extension)
     using Tensors

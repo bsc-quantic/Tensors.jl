@@ -16,7 +16,7 @@ end
 
 @static if !isdefined(Base, :get_extension)
     function __init__()
-        @require ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4" include("../ext/ChainRulesCoreExt.jl")
+        @require ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4" include("../ext/TensorsChainRulesCoreExt.jl")
     end
 end
 

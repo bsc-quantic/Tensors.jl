@@ -4,17 +4,6 @@
     using ChainRulesCore: ProjectTo
     using ChainRulesTestUtils
 
-    # fix for FiniteDifferences: `FiniteDifferences.to_vec` fails for Tensor{T,0}
-    function ChainRulesTestUtils.FiniteDifferences.to_vec(x::T) where {T<:Tensor}
-        x_vec, Array_from_vec = ChainRulesTestUtils.FiniteDifferences.to_vec(parent(x))
-        _labels = labels(x)
-        _meta = x.meta
-
-        Tensor_from_vec(y) = T(Array_from_vec(y), _labels; _meta)
-
-        return x_vec, Tensor_from_vec
-    end
-
     @testset "Tensor" begin
         test_frule(Tensor, rand(2, 2), (:i, :j), fkwargs=(; tags=Set(["TEST"])))
         test_rrule(Tensor, rand(2, 2), (:i, :j); fkwargs=(; tags=Set(["TEST"])))

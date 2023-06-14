@@ -2,6 +2,11 @@ using OMEinsum
 using LinearAlgebra
 using UUIDs: uuid4
 
+# TODO test array container typevar on output
+for op in [:+, :-, :*, :/, :\, :^, :÷, :fld, :cld, :mod, :%, :fldmod, :fld1, :mod1, :fldmod1, ://, :gcd, :lcm, :gcdx, :widemul]
+    @eval Base.$op(a::Tensor{A,0}, b::Tensor{B,0}) where {A,B} = broadcast($op, a, b)
+end
+
 """
     contract(::Tensor, ::Tensor[, i])
 

@@ -8,7 +8,7 @@ for op in [:+, :-, :*, :/, :\, :^, :÷, :fld, :cld, :mod, :%, :fldmod, :fld1, :m
 end
 
 """
-    contract(::Tensor, ::Tensor[, i])
+    contract(a::Tensor[, b::Tensor, dims=nonunique([labels(a)..., labels(b)...])])
 
 Perform tensor contraction operation.
 """
@@ -22,6 +22,18 @@ function contract(a::Tensor, b::Tensor; dims=(∩(labels(a), labels(b))))
     data = EinCode((String.(ia), String.(ib)), String.(ic))(parent(a), parent(b))
 
     # TODO merge metadata?
+    return Tensor(data, ic)
+end
+
+function contract(a::Tensor; dims=nonunique(labels(a)))
+    ia = labels(a)
+    i = ∩(dims, ia)
+
+    ic = tuple(setdiff(ia, i isa Base.AbstractVecOrTuple ? i : (i,))...)
+
+    data = EinCode((String.(ia),), String.(ic))(parent(a))
+
+    # TODO merge metadata
     return Tensor(data, ic)
 end
 

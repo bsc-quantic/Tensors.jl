@@ -49,6 +49,36 @@
     @testset "contract" begin
         using Tensors: Tensor, contract
 
+        @testset "axis sum" begin
+            A = Tensor(rand(2, 3, 4), (:i, :j, :k))
+
+            C = contract(A, dims=(:i,))
+            C_ein = ein"ijk -> jk"(A)
+            @test labels(C) == (:j, :k)
+            @test size(C) == size(C_ein) == (3, 4)
+            @test C ≈ C_ein
+        end
+
+        @testset "diagonal" begin
+            A = Tensor(rand(2, 3, 2), (:i, :j, :i))
+
+            C = contract(A, dims=())
+            C_ein = ein"iji -> ij"(A)
+            @test labels(C) == (:i, :j)
+            @test size(C) == size(C_ein) == (2, 3)
+            @test C ≈ C_ein
+        end
+
+        @testset "trace" begin
+            A = Tensor(rand(2, 3, 2), (:i, :j, :i))
+
+            C = contract(A, dims=(:i,))
+            C_ein = ein"iji -> j"(A)
+            @test labels(C) == (:j,)
+            @test size(C) == size(C_ein) == (3,)
+            @test C ≈ C_ein
+        end
+
         @testset "matrix multiplication" begin
             A = Tensor(rand(2, 3), (:i, :j))
             B = Tensor(rand(3, 4), (:j, :k))

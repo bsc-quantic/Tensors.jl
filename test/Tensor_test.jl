@@ -1,7 +1,7 @@
 @testset "Tensor" begin
     @testset "Constructors" begin
         @testset "Number" begin
-            tensor = Tensor(1.0, tags=Set(["TEST"]))
+            tensor = Tensor(1.0, tags = Set(["TEST"]))
             @test labels(tensor) == ()
             @test parent(tensor) == fill(1.0)
             @test hastag(tensor, "TEST")
@@ -53,7 +53,11 @@
         @test parent(replace(tensor, :a => :u, :b => :v, :c => :w)) === parent(tensor)
 
         # :alias in meta
-        tensor = Tensor(zeros(2, 2, 2), (:i, :j, :k); alias=Dict(:left => :i, :right => :j, :up => :k))
+        tensor = Tensor(
+            zeros(2, 2, 2),
+            (:i, :j, :k);
+            alias = Dict(:left => :i, :right => :j, :up => :k),
+        )
 
         replaced_tensor = replace(tensor, :i => :u, :j => :v, :k => :w)
         @test labels(replaced_tensor) == (:u, :v, :w)
@@ -134,7 +138,7 @@
         @test first(tensor) == first(data)
         @test last(tensor) == last(data)
         @test tensor[1, :, 2] == data[1, :, 2]
-        @test tensor[i=1, k=2] == data[1, :, 2]
+        @test tensor[i = 1, k = 2] == data[1, :, 2]
 
         tensor[1] = 0
         @test tensor[1] == data[1]
@@ -153,7 +157,7 @@
     @testset "adjoint" begin
         @testset "Vector" begin
             data = rand(Complex{Float64}, 2)
-            tensor = Tensor(data, (:i,); test="TEST")
+            tensor = Tensor(data, (:i,); test = "TEST")
 
             @test adjoint(tensor) |> labels == labels(tensor)
             @test adjoint(tensor) |> ndims == 1
@@ -166,7 +170,7 @@
             using LinearAlgebra: tr
 
             data = rand(Complex{Float64}, 2, 2)
-            tensor = Tensor(data, (:i, :j); test="TEST")
+            tensor = Tensor(data, (:i, :j); test = "TEST")
 
             @test adjoint(tensor) |> labels == labels(tensor)
             @test adjoint(tensor) |> ndims == 2
@@ -179,7 +183,7 @@
     @testset "transpose" begin
         @testset "Vector" begin
             data = rand(Complex{Float64}, 2)
-            tensor = Tensor(data, (:i,); test="TEST")
+            tensor = Tensor(data, (:i,); test = "TEST")
 
             @test transpose(tensor) |> labels == labels(tensor)
             @test transpose(tensor) |> ndims == 1
@@ -192,7 +196,7 @@
             using LinearAlgebra: tr
 
             data = rand(Complex{Float64}, 2, 2)
-            tensor = Tensor(data, (:i, :j); test="TEST")
+            tensor = Tensor(data, (:i, :j); test = "TEST")
 
             @test transpose(tensor) |> labels == (:j, :i)
             @test transpose(tensor) |> ndims == 2

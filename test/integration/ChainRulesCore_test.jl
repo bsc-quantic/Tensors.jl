@@ -5,15 +5,15 @@
     using ChainRulesTestUtils
 
     @testset "Tensor" begin
-        test_frule(Tensor, rand(2, 2), (:i, :j), fkwargs=(; tags=Set(["TEST"])))
-        test_rrule(Tensor, rand(2, 2), (:i, :j); fkwargs=(; tags=Set(["TEST"])))
+        test_frule(Tensor, rand(2, 2), (:i, :j), fkwargs = (; tags = Set(["TEST"])))
+        test_rrule(Tensor, rand(2, 2), (:i, :j); fkwargs = (; tags = Set(["TEST"])))
     end
 
     @testset "ProjectTo" begin
         @testset "Matrix -> Matrix" begin
             data = rand(2, 2)
 
-            tensor = Tensor(data, (:i, :j); tags=Set(["TEST"]))
+            tensor = Tensor(data, (:i, :j); tags = Set(["TEST"]))
             proj = ProjectTo(tensor)
 
             Δdata = rand(2, 2)
@@ -26,7 +26,7 @@
         @testset "Matrix -> Diagonal" begin
             data = Diagonal(rand(2))
 
-            tensor = Tensor(data, (:i, :j); tags=Set(["TEST"]))
+            tensor = Tensor(data, (:i, :j); tags = Set(["TEST"]))
             proj = ProjectTo(tensor)
 
             Δdata = rand(2, 2)

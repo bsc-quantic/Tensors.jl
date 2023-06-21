@@ -3,7 +3,28 @@ using LinearAlgebra
 using UUIDs: uuid4
 
 # TODO test array container typevar on output
-for op in [:+, :-, :*, :/, :\, :^, :÷, :fld, :cld, :mod, :%, :fldmod, :fld1, :mod1, :fldmod1, ://, :gcd, :lcm, :gcdx, :widemul]
+for op in [
+    :+,
+    :-,
+    :*,
+    :/,
+    :\,
+    :^,
+    :÷,
+    :fld,
+    :cld,
+    :mod,
+    :%,
+    :fldmod,
+    :fld1,
+    :mod1,
+    :fldmod1,
+    ://,
+    :gcd,
+    :lcm,
+    :gcdx,
+    :widemul,
+]
     @eval Base.$op(a::Tensor{A,0}, b::Tensor{B,0}) where {A,B} = broadcast($op, a, b)
 end
 
@@ -12,7 +33,7 @@ end
 
 Perform tensor contraction operation.
 """
-function contract(a::Tensor, b::Tensor; dims=(∩(labels(a), labels(b))))
+function contract(a::Tensor, b::Tensor; dims = (∩(labels(a), labels(b))))
     ia = labels(a)
     ib = labels(b)
     i = ∩(dims, ia, ib)
@@ -25,7 +46,7 @@ function contract(a::Tensor, b::Tensor; dims=(∩(labels(a), labels(b))))
     return Tensor(data, ic)
 end
 
-function contract(a::Tensor; dims=nonunique(labels(a)))
+function contract(a::Tensor; dims = nonunique(labels(a)))
     ia = labels(a)
     i = ∩(dims, ia)
 
@@ -39,7 +60,8 @@ end
 
 contract(a::Union{T,AbstractArray{T,0}}, b::Tensor{T}) where {T} = contract(Tensor(a), b)
 contract(a::Tensor{T}, b::Union{T,AbstractArray{T,0}}) where {T} = contract(a, Tensor(b))
-contract(a::AbstractArray{<:Any,0}, b::AbstractArray{<:Any,0}) = contract(Tensor(a), Tensor(b)) |> only
+contract(a::AbstractArray{<:Any,0}, b::AbstractArray{<:Any,0}) =
+    contract(Tensor(a), Tensor(b)) |> only
 contract(a::Number, b::Number) = contract(fill(a), fill(b))
 
 """
@@ -51,7 +73,7 @@ Base.:*(a::Tensor, b::Tensor) = contract(a, b)
 Base.:*(a::Tensor, b) = contract(a, b)
 Base.:*(a, b::Tensor) = contract(a, b)
 
-LinearAlgebra.svd(t::Tensor; left_inds=(), kwargs...) = svd(t, left_inds; kwargs...)
+LinearAlgebra.svd(t::Tensor; left_inds = (), kwargs...) = svd(t, left_inds; kwargs...)
 
 function LinearAlgebra.svd(t::Tensor, left_inds; kwargs...)
     if isempty(left_inds)
@@ -69,7 +91,11 @@ function LinearAlgebra.svd(t::Tensor, left_inds; kwargs...)
 
     # permute array
     tensor = permutedims(t, (left_inds..., right_inds...))
-    data = reshape(parent(tensor), prod(i -> size(t, i), left_inds), prod(i -> size(t, i), right_inds))
+    data = reshape(
+        parent(tensor),
+        prod(i -> size(t, i), left_inds),
+        prod(i -> size(t, i), right_inds),
+    )
 
     # compute SVD
     U, s, V = svd(data; kwargs...)
@@ -89,19 +115,29 @@ function LinearAlgebra.svd(t::Tensor, left_inds; kwargs...)
     return U, s, Vt
 end
 
-LinearAlgebra.qr(t::Tensor; left_inds=(), kwargs...) = qr(t, left_inds; kwargs...)
+LinearAlgebra.qr(t::Tensor; left_inds = (), kwargs...) = qr(t, left_inds; kwargs...)
 
-function LinearAlgebra.qr(t::Tensor, left_inds; virtualind::Symbol=Symbol(uuid4()), kwargs...)
+function LinearAlgebra.qr(
+    t::Tensor,
+    left_inds;
+    virtualind::Symbol = Symbol(uuid4()),
+    kwargs...,
+)
     # TODO better error exception and checks
     isempty(left_inds) && throw(ErrorException("no left-indices in QR factorization"))
-    left_inds ⊆ labels(t) || throw(ErrorException("all left-indices must be in $(labels(t))"))
+    left_inds ⊆ labels(t) ||
+        throw(ErrorException("all left-indices must be in $(labels(t))"))
 
     right_inds = setdiff(labels(t), left_inds)
     isempty(right_inds) && throw(ErrorException("no right-indices in QR factorization"))
 
     # permute array
     tensor = permutedims(t, (left_inds..., right_inds...))
-    data = reshape(parent(tensor), prod(i -> size(t, i), left_inds), prod(i -> size(t, i), right_inds))
+    data = reshape(
+        parent(tensor),
+        prod(i -> size(t, i), left_inds),
+        prod(i -> size(t, i), right_inds),
+    )
 
     # compute QR
     Q, R = qr(data; kwargs...)

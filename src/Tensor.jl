@@ -13,11 +13,17 @@ struct Tensor{T,N,A<:AbstractArray{T,N}} <: AbstractArray{T,N}
     labels::NTuple{N,Symbol}
     meta::Dict{Symbol,Any}
 
-    function Tensor{T,N,A}(data::A, labels::NTuple{N,Symbol}; meta...) where {T,N,A<:AbstractArray{T,N}}
+    function Tensor{T,N,A}(
+        data::A,
+        labels::NTuple{N,Symbol};
+        meta...,
+    ) where {T,N,A<:AbstractArray{T,N}}
         meta = Dict{Symbol,Any}(meta...)
         haskey(meta, :tags) || (meta[:tags] = Set{String}())
-        all(i -> allequal(Iterators.map(dim -> size(data, dim), findall(==(i), labels))), nonunique(collect(labels))) ||
-            throw(DimensionMismatch("nonuniform size of repeated indices"))
+        all(
+            i -> allequal(Iterators.map(dim -> size(data, dim), findall(==(i), labels))),
+            nonunique(collect(labels)),
+        ) || throw(DimensionMismatch("nonuniform size of repeated indices"))
 
         new{T,N,A}(data, labels, meta)
     end
@@ -43,7 +49,13 @@ function Base.similar(t::Tensor{_,N}, ::Type{T}; kwargs...) where {_,T,N}
     end
 end
 # TODO fix this
-function Base.similar(t::Tensor, ::Type{T}, dims::Int64...; labels=labels(t), meta...) where {T}
+function Base.similar(
+    t::Tensor,
+    ::Type{T},
+    dims::Int64...;
+    labels = labels(t),
+    meta...,
+) where {T}
     data = similar(parent(t), T, dims)
 
     # copy metadata
@@ -124,21 +136,26 @@ Base.axes(t::Tensor, d) = axes(parent(t), dim(t, d))
 Base.strides(t::Tensor) = strides(parent(t))
 Base.stride(t::Tensor, i::Symbol) = stride(parent(t), dim(t, i))
 
-Base.unsafe_convert(::Type{Ptr{T}}, t::Tensor{T}) where {T} = Base.unsafe_convert(Ptr{T}, parent(t))
+Base.unsafe_convert(::Type{Ptr{T}}, t::Tensor{T}) where {T} =
+    Base.unsafe_convert(Ptr{T}, parent(t))
 
 Base.elsize(T::Type{<:Tensor}) = elsize(parenttype(T))
 
 # Broadcasting
 Base.BroadcastStyle(::Type{T}) where {T<:Tensor} = ArrayStyle{T}()
 
-function Base.similar(bc::Broadcasted{ArrayStyle{Tensor{T,N,A}}}, ::Type{ElType}) where {T,N,A,ElType}
+function Base.similar(
+    bc::Broadcasted{ArrayStyle{Tensor{T,N,A}}},
+    ::Type{ElType},
+) where {T,N,A,ElType}
     # NOTE already checked if dimension mismatch
     # TODO throw on label mismatch?
     tensor = first(arg for arg in bc.args if arg isa Tensor{T,N,A})
     similar(tensor, ElType)
 end
 
-Base.selectdim(t::Tensor, d::Integer, i) = Tensor(selectdim(parent(t), d, i), labels(t); t.meta...)
+Base.selectdim(t::Tensor, d::Integer, i) =
+    Tensor(selectdim(parent(t), d, i), labels(t); t.meta...)
 function Base.selectdim(t::Tensor, d::Integer, i::Integer)
     data = selectdim(parent(t), d, i)
     indices = [label for (i, label) in enumerate(labels(t)) if i != d]
@@ -147,16 +164,21 @@ end
 
 Base.selectdim(t::Tensor, d::Symbol, i) = selectdim(t, dim(t, d), i)
 
-Base.permutedims(t::Tensor, perm) = Tensor(permutedims(parent(t), perm), getindex.((labels(t),), perm); t.meta...)
-Base.permutedims!(dest::Tensor, src::Tensor, perm) = permutedims!(parent(dest), parent(src), perm)
+Base.permutedims(t::Tensor, perm) =
+    Tensor(permutedims(parent(t), perm), getindex.((labels(t),), perm); t.meta...)
+Base.permutedims!(dest::Tensor, src::Tensor, perm) =
+    permutedims!(parent(dest), parent(src), perm)
 
 function Base.permutedims(t::Tensor{T,N}, perm::NTuple{N,Symbol}) where {T,N}
     perm = map(i -> findfirst(==(i), labels(t)), perm)
     permutedims(t, perm)
 end
 
-Base.view(t::Tensor, i...) =
-    Tensor(view(parent(t), i...), [label for (label, j) in zip(labels(t), i) if !(j isa Integer)]; t.meta...)
+Base.view(t::Tensor, i...) = Tensor(
+    view(parent(t), i...),
+    [label for (label, j) in zip(labels(t), i) if !(j isa Integer)];
+    t.meta...,
+)
 
 function Base.view(t::Tensor, inds::Pair{Symbol,<:Any}...)
     indices = map(labels(t)) do ind
@@ -165,7 +187,8 @@ function Base.view(t::Tensor, inds::Pair{Symbol,<:Any}...)
     end
 
     let data = view(parent(t), indices...),
-        labels = [label for (index, label) in zip(indices, labels(t)) if !(index isa Integer)]
+        labels =
+            [label for (index, label) in zip(indices, labels(t)) if !(index isa Integer)]
 
         Tensor(data, labels; t.meta...)
     end
@@ -174,8 +197,6 @@ end
 Base.adjoint(t::Tensor) = Tensor(conj(parent(t)), labels(t); t.meta...)
 
 # NOTE: Maybe use transpose for lazy transposition ?
-Base.transpose(t::Tensor{T,1,A}) where {T,A<:AbstractArray{T,1}} =
-    permutedims(t, (1,))
+Base.transpose(t::Tensor{T,1,A}) where {T,A<:AbstractArray{T,1}} = permutedims(t, (1,))
 
-Base.transpose(t::Tensor{T,2,A}) where {T,A<:AbstractArray{T,2}} =
-    permutedims(t, (2, 1))
+Base.transpose(t::Tensor{T,2,A}) where {T,A<:AbstractArray{T,2}} = permutedims(t, (2, 1))

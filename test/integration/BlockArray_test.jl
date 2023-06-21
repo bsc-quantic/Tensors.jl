@@ -67,8 +67,9 @@
             contracted_tensor = contract(tensor, block_tensor)
 
             @test contracted_tensor |> labels == (:i, :k)
-            @test (contracted_tensor |> parent |> blocksizes)[2] == [2, 2]
-            @test Array(parent(contracted_tensor)) ≈ parent(contract(tensor, Tensor(data2, [:j, :k])))
+            @test (contracted_tensor|>parent|>blocksizes)[2] == [2, 2]
+            @test Array(parent(contracted_tensor)) ≈
+                  parent(contract(tensor, Tensor(data2, [:j, :k])))
         end
     end
 

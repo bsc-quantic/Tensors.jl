@@ -41,6 +41,21 @@
 
         @test tensor ∈ Set([tensor])
         @test zeros(size(tensor)...) ∉ Set([tensor])
+
+        @test tensor == permutedims(tensor, (3, 1, 2))
+    end
+
+    @testset "isapprox" begin
+        tensor = Tensor(zeros(2, 2, 2), (:i, :j, :k))
+        @test tensor ≈ copy(tensor)
+        @test !(tensor ≈ zeros(size(tensor)...))
+        @test !(zeros(size(tensor)...) ≈ tensor)
+
+        data = rand(2, 2, 2)
+        tensor = Tensor(data, (:i, :j, :k))
+        @test tensor ≈ permutedims(tensor, (3, 1, 2))
+        @test tensor ≈ Tensor(data .+ 1e-10, (:i, :j, :k))
+        @test !(tensor ≈ Tensor(data, (:i, :m, :n)))
     end
 
     @testset "Base.replace" begin

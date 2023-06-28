@@ -56,7 +56,7 @@
             C_ein = ein"ijk -> jk"(A)
             @test labels(C) == (:j, :k)
             @test size(C) == size(C_ein) == (3, 4)
-            @test C ≈ C_ein
+            @test parent(C) ≈ C_ein
         end
 
         @testset "diagonal" begin
@@ -66,7 +66,7 @@
             C_ein = ein"iji -> ij"(A)
             @test labels(C) == (:i, :j)
             @test size(C) == size(C_ein) == (2, 3)
-            @test C ≈ C_ein
+            @test parent(C) ≈ C_ein
         end
 
         @testset "trace" begin
@@ -76,7 +76,7 @@
             C_ein = ein"iji -> j"(A)
             @test labels(C) == (:j,)
             @test size(C) == size(C_ein) == (3,)
-            @test C ≈ C_ein
+            @test parent(C) ≈ C_ein
         end
 
         @testset "matrix multiplication" begin
@@ -87,7 +87,7 @@
             C_mat = parent(A) * parent(B)
             @test labels(C) == (:i, :k)
             @test size(C) == (2, 4) == size(C_mat)
-            @test C ≈ A * B ≈ C_mat
+            @test parent(C) ≈ parent(A * B) ≈ C_mat
         end
 
         @testset "inner product" begin
@@ -109,7 +109,7 @@
             C_ein = ein"ij, kl -> ijkl"(A, B)
             @test size(C) == (2, 2, 2, 2) == size(C_ein)
             @test labels(C) == (:i, :j, :k, :l)
-            @test C ≈ C_ein
+            @test parent(C) ≈ C_ein
         end
 
         @testset "scale" begin
@@ -119,12 +119,12 @@
             C = contract(A, scalar)
             @test labels(C) == (:i, :j)
             @test size(C) == (2, 2)
-            @test C ≈ parent(A) * scalar
+            @test parent(C) ≈ parent(A) * scalar
 
             D = contract(scalar, A)
             @test labels(D) == (:i, :j)
             @test size(D) == (2, 2)
-            @test D ≈ scalar * parent(A)
+            @test parent(D) ≈ scalar * parent(A)
         end
 
         @testset "manual" begin
@@ -136,14 +136,14 @@
             C_ein = ein"ijk, klj -> il"(A, B)
             @test labels(C) == (:i, :l)
             @test size(C) == (2, 5) == size(C_ein)
-            @test C ≈ C_ein
+            @test parent(C) ≈ C_ein
 
             # Contraction of not all common indices
             C = contract(A, B, dims = (:j,))
             C_ein = ein"ijk, klj -> ikl"(A, B)
             @test labels(C) == (:i, :k, :l)
             @test size(C) == (2, 4, 5) == size(C_ein)
-            @test C ≈ C_ein
+            @test parent(C) ≈ C_ein
 
             @testset "Complex numbers" begin
                 A = Tensor(rand(Complex{Float64}, 2, 3, 4), (:i, :j, :k))
@@ -153,7 +153,7 @@
                 C_ein = ein"ijk, klj -> il"(A, B)
                 @test labels(C) == (:i, :l)
                 @test size(C) == (2, 5) == size(C_ein)
-                @test C ≈ C_ein
+                @test parent(C) ≈ C_ein
             end
         end
     end
@@ -196,13 +196,13 @@
             Q, R = qr(tensor, labels(tensor)[1:2])
             Q_truncated = view(Q, labels(Q)[end] => 1:2)
             tensor_recovered = ein"ijk, kl -> ijl"(Q_truncated, R)
-            @test tensor_recovered ≈ tensor
+            @test tensor_recovered ≈ parent(tensor)
 
             data2 = rand(2, 4, 6, 8)
             tensor2 = Tensor(data2, (:i, :j, :k, :l))
             Q2, R2 = qr(tensor2, labels(tensor2)[1:2])
             tensor2_recovered = ein"ijk, klm -> ijlm"(Q2, R2)
-            @test tensor2_recovered ≈ tensor2
+            @test tensor2_recovered ≈ parent(tensor2)
         end
     end
 end

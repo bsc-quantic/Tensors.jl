@@ -70,7 +70,21 @@ Base.:(==)(a::Tensor, b::AbstractArray) = isequal(a, b)
 Base.:(==)(a::Tensor, b::Tensor) = isequal(a, b)
 Base.isequal(a::AbstractArray, b::Tensor) = false
 Base.isequal(a::Tensor, b::AbstractArray) = false
-Base.isequal(a::Tensor, b::Tensor) = allequal(labels.((a, b))) && allequal(parent.((a, b)))
+function Base.isequal(a::Tensor, b::Tensor)
+    issetequal(labels(a), labels(b)) || return false
+    perm = [findfirst(==(label), labels(b)) for label in labels(a)]
+    b_perm = permutedims(b, perm)
+    return allequal(labels.((a, b_perm))) && allequal(parent.((a, b_perm)))
+end
+
+Base.isapprox(a::AbstractArray, b::Tensor) = false
+Base.isapprox(a::Tensor, b::AbstractArray) = false
+function Base.isapprox(a::Tensor, b::Tensor)
+    issetequal(labels(a), labels(b)) || return false
+    perm = [findfirst(==(label), labels(b)) for label in labels(a)]
+    b_perm = permutedims(b, perm)
+    return allequal(labels.((a, b_perm))) && isapprox(parent(a), parent(b_perm))
+end
 
 labels(t::Tensor) = t.labels
 

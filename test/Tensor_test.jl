@@ -46,15 +46,17 @@
     end
 
     @testset "isapprox" begin
-        tensor = Tensor(rand(2, 2, 2), (:i, :j, :k))
-        @test tensor ≈ copy(tensor)
-        @test !(tensor ≈ zeros(size(tensor)...))
+        data = rand(2, 2, 2, 2)
+        tensor = Tensor(data, (:i, :j, :k, :l))
 
-        data = rand(2, 2, 2)
-        tensor = Tensor(data, (:i, :j, :k))
-        @test tensor ≈ permutedims(tensor, (3, 1, 2))
-        @test tensor ≈ Tensor(data .+ 1e-10, (:i, :j, :k))
-        @test !(tensor ≈ Tensor(data, (:i, :m, :n)))
+        @test tensor ≈ copy(tensor)
+        @test tensor ≈ permutedims(tensor, (3, 1, 2, 4))
+        @test tensor ≈ permutedims(tensor, (2, 4, 1, 3))
+        @test tensor ≈ permutedims(tensor, (4, 3, 2, 1))
+        @test tensor ≈ Tensor(data .+ 1e-14, (:i, :j, :k, :l))
+
+        @test !(tensor ≈ Tensor(data, (:i, :m, :n, :l)))
+        @test !(tensor ≈ Tensor(rand(2, 2, 2), (:i, :j, :k)))
     end
 
     @testset "Base.replace" begin

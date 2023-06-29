@@ -73,8 +73,8 @@ Base.isequal(a::Tensor, b::AbstractArray) = false
 function Base.isequal(a::Tensor, b::Tensor)
     issetequal(labels(a), labels(b)) || return false
     perm = [findfirst(==(label), labels(b)) for label in labels(a)]
-    return all(eachindex(IndexCartesian(), a)) do I
-        j = CartesianIndex(permute!(collect(Tuple(i)), perm))
+    return all(eachindex(IndexCartesian(), a)) do i
+        j = CartesianIndex(Tuple(permute!(collect(Tuple(i)), perm)))
         isequal(a[i], b[j])
     end
 end
@@ -84,8 +84,8 @@ Base.isapprox(a::Tensor, b::AbstractArray) = false
 function Base.isapprox(a::Tensor, b::Tensor)
     issetequal(labels(a), labels(b)) || return false
     perm = [findfirst(==(label), labels(b)) for label in labels(a)]
-    return all(eachindex(IndexCartesian(), a)) do I
-        j = CartesianIndex(permute!(collect(Tuple(i)), perm))
+    return all(eachindex(IndexCartesian(), a)) do i
+        j = CartesianIndex(Tuple(permute!(collect(Tuple(i)), perm)))
         isapprox(a[i], b[j])
     end
 end

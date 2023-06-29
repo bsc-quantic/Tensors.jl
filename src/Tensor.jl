@@ -70,7 +70,25 @@ Base.:(==)(a::Tensor, b::AbstractArray) = isequal(a, b)
 Base.:(==)(a::Tensor, b::Tensor) = isequal(a, b)
 Base.isequal(a::AbstractArray, b::Tensor) = false
 Base.isequal(a::Tensor, b::AbstractArray) = false
-Base.isequal(a::Tensor, b::Tensor) = allequal(labels.((a, b))) && allequal(parent.((a, b)))
+function Base.isequal(a::Tensor, b::Tensor)
+    issetequal(labels(a), labels(b)) || return false
+    perm = [findfirst(==(label), labels(b)) for label in labels(a)]
+    return all(eachindex(IndexCartesian(), a)) do i
+        j = CartesianIndex(Tuple(permute!(collect(Tuple(i)), invperm(perm))))
+        isequal(a[i], b[j])
+    end
+end
+
+Base.isapprox(a::AbstractArray, b::Tensor) = false
+Base.isapprox(a::Tensor, b::AbstractArray) = false
+function Base.isapprox(a::Tensor, b::Tensor)
+    issetequal(labels(a), labels(b)) || return false
+    perm = [findfirst(==(label), labels(b)) for label in labels(a)]
+    return all(eachindex(IndexCartesian(), a)) do i
+        j = CartesianIndex(Tuple(permute!(collect(Tuple(i)), invperm(perm))))
+        isapprox(a[i], b[j])
+    end
+end
 
 labels(t::Tensor) = t.labels
 

@@ -46,7 +46,7 @@
     end
 
     @testset "isapprox" begin
-        data = rand(2, 2, 2, 2)
+        data = rand(2, 3, 4, 5)
         tensor = Tensor(data, (:i, :j, :k, :l))
 
         @test tensor ≈ copy(tensor)

@@ -26,6 +26,9 @@
         @test labels(tensor) === labels(copy(tensor))
         @test tensor.meta == copy(tensor).meta
         @test tensor.meta !== copy(tensor).meta
+
+        @test copy(view(tensor, :i => 1)) isa Tensor
+        @test parent(copy(view(tensor, :i => 1))) isa Array
     end
 
     @testset "isequal" begin

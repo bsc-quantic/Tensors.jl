@@ -33,7 +33,7 @@ end
 
 Perform tensor contraction operation.
 """
-function contract(a::Tensor, b::Tensor; dims = (∩(labels(a), labels(b))))
+function contract(a::Tensor, b::Tensor; dims=(∩(labels(a), labels(b))))
     ia = labels(a)
     ib = labels(b)
     i = ∩(dims, ia, ib)
@@ -46,7 +46,7 @@ function contract(a::Tensor, b::Tensor; dims = (∩(labels(a), labels(b))))
     return Tensor(data, ic)
 end
 
-function contract(a::Tensor; dims = nonunique(labels(a)))
+function contract(a::Tensor; dims=nonunique(labels(a)))
     ia = labels(a)
     i = ∩(dims, ia)
 
@@ -122,8 +122,8 @@ LinearAlgebra.qr(t::Tensor{<:Any,2}; kwargs...) =
 function LinearAlgebra.qr(
     t::Tensor;
     left_inds,
-    virtualind::Symbol = Symbol(uuid4()),
-    kwargs...,
+    virtualind::Symbol=Symbol(uuid4()),
+    kwargs...
 )
     # TODO better error exception and checks
     isempty(left_inds) && throw(ErrorException("no left-indices in QR factorization"))

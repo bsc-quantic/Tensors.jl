@@ -74,7 +74,7 @@ Base.:*(a::Tensor, b) = contract(a, b)
 Base.:*(a, b::Tensor) = contract(a, b)
 
 LinearAlgebra.svd(t::Tensor{<:Any,2}; kwargs...) =
-    @invoke svd(t::Tensor; left_inds=(first(labels(t)),), kwargs...)
+    Base.@invoke svd(t::Tensor; left_inds=(first(labels(t)),), kwargs...)
 
 function LinearAlgebra.svd(t::Tensor; left_inds, kwargs...)
     if isempty(left_inds)
@@ -117,7 +117,7 @@ function LinearAlgebra.svd(t::Tensor; left_inds, kwargs...)
 end
 
 LinearAlgebra.qr(t::Tensor{<:Any,2}; kwargs...) =
-    @invoke qr(t::Tensor; left_inds=(first(labels(t)),), kwargs...)
+    Base.@invoke qr(t::Tensor; left_inds=(first(labels(t)),), kwargs...)
 
 function LinearAlgebra.qr(
     t::Tensor;

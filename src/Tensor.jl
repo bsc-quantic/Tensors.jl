@@ -192,6 +192,9 @@ function Base.permutedims(t::Tensor{T,N}, perm::NTuple{N,Symbol}) where {T,N}
     permutedims(t, perm)
 end
 
+Base.dropdims(t::Tensor; dims = tuple(findall(==(1), size(t))...)) =
+    Tensor(dropdims(parent(t); dims), labels(t)[setdiff(1:ndims(t), dims)]; t.meta...)
+
 Base.view(t::Tensor, i...) = Tensor(
     view(parent(t), i...),
     [label for (label, j) in zip(labels(t), i) if !(j isa Integer)];

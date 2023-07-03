@@ -52,7 +52,7 @@
         @testset "axis sum" begin
             A = Tensor(rand(2, 3, 4), (:i, :j, :k))
 
-            C = contract(A, dims = (:i,))
+            C = contract(A, dims=(:i,))
             C_ein = ein"ijk -> jk"(A)
             @test labels(C) == (:j, :k)
             @test size(C) == size(C_ein) == (3, 4)
@@ -62,7 +62,7 @@
         @testset "diagonal" begin
             A = Tensor(rand(2, 3, 2), (:i, :j, :i))
 
-            C = contract(A, dims = ())
+            C = contract(A, dims=())
             C_ein = ein"iji -> ij"(A)
             @test labels(C) == (:i, :j)
             @test size(C) == size(C_ein) == (2, 3)
@@ -72,7 +72,7 @@
         @testset "trace" begin
             A = Tensor(rand(2, 3, 2), (:i, :j, :i))
 
-            C = contract(A, dims = (:i,))
+            C = contract(A, dims=(:i,))
             C_ein = ein"iji -> j"(A)
             @test labels(C) == (:j,)
             @test size(C) == size(C_ein) == (3,)
@@ -132,14 +132,14 @@
             B = Tensor(rand(4, 5, 3), (:k, :l, :j))
 
             # Contraction of all common indices
-            C = contract(A, B, dims = (:j, :k))
+            C = contract(A, B, dims=(:j, :k))
             C_ein = ein"ijk, klj -> il"(A, B)
             @test labels(C) == (:i, :l)
             @test size(C) == (2, 5) == size(C_ein)
             @test parent(C) ≈ C_ein
 
             # Contraction of not all common indices
-            C = contract(A, B, dims = (:j,))
+            C = contract(A, B, dims=(:j,))
             C_ein = ein"ijk, klj -> ikl"(A, B)
             @test labels(C) == (:i, :k, :l)
             @test size(C) == (2, 4, 5) == size(C_ein)
@@ -149,7 +149,7 @@
                 A = Tensor(rand(Complex{Float64}, 2, 3, 4), (:i, :j, :k))
                 B = Tensor(rand(Complex{Float64}, 4, 5, 3), (:k, :l, :j))
 
-                C = contract(A, B, dims = (:j, :k))
+                C = contract(A, B, dims=(:j, :k))
                 C_ein = ein"ijk, klj -> il"(A, B)
                 @test labels(C) == (:i, :l)
                 @test size(C) == (2, 5) == size(C_ein)

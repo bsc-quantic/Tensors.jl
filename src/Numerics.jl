@@ -73,9 +73,10 @@ Base.:*(a::Tensor, b::Tensor) = contract(a, b)
 Base.:*(a::Tensor, b) = contract(a, b)
 Base.:*(a, b::Tensor) = contract(a, b)
 
-LinearAlgebra.svd(t::Tensor; left_inds = (), kwargs...) = svd(t, left_inds; kwargs...)
+LinearAlgebra.svd(t::Tensor{<:Any,2}; kwargs...) =
+    @invoke svd(t::Tensor; left_inds=(first(labels(t)),), kwargs...)
 
-function LinearAlgebra.svd(t::Tensor, left_inds; kwargs...)
+function LinearAlgebra.svd(t::Tensor; left_inds, kwargs...)
     if isempty(left_inds)
         throw(ErrorException("no left-indices in SVD factorization"))
     elseif any(∉(labels(t)), left_inds)
@@ -115,11 +116,12 @@ function LinearAlgebra.svd(t::Tensor, left_inds; kwargs...)
     return U, s, Vt
 end
 
-LinearAlgebra.qr(t::Tensor; left_inds = (), kwargs...) = qr(t, left_inds; kwargs...)
+LinearAlgebra.qr(t::Tensor{<:Any,2}; kwargs...) =
+    @invoke qr(t::Tensor; left_inds=(first(labels(t)),), kwargs...)
 
 function LinearAlgebra.qr(
-    t::Tensor,
-    left_inds;
+    t::Tensor;
+    left_inds,
     virtualind::Symbol = Symbol(uuid4()),
     kwargs...,
 )

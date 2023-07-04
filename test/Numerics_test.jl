@@ -156,6 +156,18 @@
                 @test parent(C) ≈ C_ein
             end
         end
+
+        @testset "multiple tensors" begin
+            A = Tensor(rand(2, 3, 4), (:i, :j, :k))
+            B = Tensor(rand(4, 5, 3), (:k, :l, :j))
+            C = Tensor(rand(5, 6, 2), (:l, :m, :i))
+            D = Tensor(rand(6, 7, 2), (:m, :n, :i))
+
+            contracted = contract(A, B, C, D)
+            @test issetequal(labels(contracted), (:n, :i))
+            @test issetequal(size(contracted), (7, 2))
+            @test contracted ≈ contract(contract(contract(A, B), C), D)
+        end
     end
 
     @testset "qr" begin

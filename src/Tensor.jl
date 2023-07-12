@@ -219,5 +219,4 @@ Base.adjoint(t::Tensor) = Tensor(conj(parent(t)), labels(t); t.meta...)
 
 # NOTE: Maybe use transpose for lazy transposition ?
 Base.transpose(t::Tensor{T,1,A}) where {T,A<:AbstractArray{T,1}} = permutedims(t, (1,))
-
-Base.transpose(t::Tensor{T,2,A}) where {T,A<:AbstractArray{T,2}} = permutedims(t, (2, 1))
+Base.transpose(t::Tensor{T,2,A}) where {T,A<:AbstractArray{T,2}} = Tensor(transpose(parent(t)), reverse(labels(t)); t.meta...)

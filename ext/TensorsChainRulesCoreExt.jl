@@ -10,11 +10,7 @@ using ChainRulesCore
 
 # projections
 function ChainRulesCore.ProjectTo(tensor::T) where {T<:Tensor}
-    ProjectTo{T}(;
-        data=ProjectTo(parent(tensor)),
-        labels=labels(tensor),
-        meta=tensor.meta
-    )
+    ProjectTo{T}(; data = ProjectTo(parent(tensor)), labels = labels(tensor), meta = tensor.meta)
 end
 
 function (project::ProjectTo{Tensor{T,N,A}})(dx::Tensor{T,N,B}) where {T,N,A<:AbstractArray{T,N},B<:AbstractArray{T,N}}

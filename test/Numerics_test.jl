@@ -9,11 +9,11 @@
             # Throw exception if left_inds is not provided
             @test_throws UndefKeywordError svd(tensor)
             # Throw exception if left_inds ∉ labels(tensor)
-            @test_throws ErrorException svd(tensor, left_inds=(:l,))
+            @test_throws ErrorException svd(tensor, left_inds = (:l,))
         end
 
         @testset "Labels Test" begin
-            U, s, V = svd(tensor, left_inds=labels(tensor)[1:2])
+            U, s, V = svd(tensor, left_inds = labels(tensor)[1:2])
             @test labels(U)[1:2] == labels(tensor)[1:2]
             @test labels(U)[3] == labels(s)[1]
             @test labels(V)[1] == labels(s)[2]
@@ -21,7 +21,7 @@
         end
 
         @testset "Size Test" begin
-            U, s, V = svd(tensor, left_inds=labels(tensor)[1:2])
+            U, s, V = svd(tensor, left_inds = labels(tensor)[1:2])
             @test size(U) == (2, 2, 2)
             @test size(s) == (2, 2)
             @test size(V) == (2, 2)
@@ -29,19 +29,19 @@
             # Additional test with different dimensions
             data2 = rand(2, 4, 6, 8)
             tensor2 = Tensor(data2, (:i, :j, :k, :l))
-            U2, s2, V2 = svd(tensor2, left_inds=labels(tensor2)[1:2])
+            U2, s2, V2 = svd(tensor2, left_inds = labels(tensor2)[1:2])
             @test size(U2) == (2, 4, 8)
             @test size(s2) == (8, 8)
             @test size(V2) == (8, 6, 8)
         end
 
         @testset "Accuracy Test" begin
-            U, s, V = svd(tensor, left_inds=labels(tensor)[1:2])
+            U, s, V = svd(tensor, left_inds = labels(tensor)[1:2])
             @test U * s * V ≈ tensor
 
             data2 = rand(2, 4, 6, 8)
             tensor2 = Tensor(data2, (:i, :j, :k, :l))
-            U2, s2, V2 = svd(tensor2, left_inds=labels(tensor2)[1:2])
+            U2, s2, V2 = svd(tensor2, left_inds = labels(tensor2)[1:2])
             @test U2 * s2 * V2 ≈ tensor2
         end
     end
@@ -52,7 +52,7 @@
         @testset "axis sum" begin
             A = Tensor(rand(2, 3, 4), (:i, :j, :k))
 
-            C = contract(A, dims=(:i,))
+            C = contract(A, dims = (:i,))
             C_ein = ein"ijk -> jk"(A)
             @test labels(C) == (:j, :k)
             @test size(C) == size(C_ein) == (3, 4)
@@ -62,7 +62,7 @@
         @testset "diagonal" begin
             A = Tensor(rand(2, 3, 2), (:i, :j, :i))
 
-            C = contract(A, dims=())
+            C = contract(A, dims = ())
             C_ein = ein"iji -> ij"(A)
             @test labels(C) == (:i, :j)
             @test size(C) == size(C_ein) == (2, 3)
@@ -72,7 +72,7 @@
         @testset "trace" begin
             A = Tensor(rand(2, 3, 2), (:i, :j, :i))
 
-            C = contract(A, dims=(:i,))
+            C = contract(A, dims = (:i,))
             C_ein = ein"iji -> j"(A)
             @test labels(C) == (:j,)
             @test size(C) == size(C_ein) == (3,)
@@ -132,14 +132,14 @@
             B = Tensor(rand(4, 5, 3), (:k, :l, :j))
 
             # Contraction of all common indices
-            C = contract(A, B, dims=(:j, :k))
+            C = contract(A, B, dims = (:j, :k))
             C_ein = ein"ijk, klj -> il"(A, B)
             @test labels(C) == (:i, :l)
             @test size(C) == (2, 5) == size(C_ein)
             @test parent(C) ≈ C_ein
 
             # Contraction of not all common indices
-            C = contract(A, B, dims=(:j,))
+            C = contract(A, B, dims = (:j,))
             C_ein = ein"ijk, klj -> ikl"(A, B)
             @test labels(C) == (:i, :k, :l)
             @test size(C) == (2, 4, 5) == size(C_ein)
@@ -149,7 +149,7 @@
                 A = Tensor(rand(Complex{Float64}, 2, 3, 4), (:i, :j, :k))
                 B = Tensor(rand(Complex{Float64}, 4, 5, 3), (:k, :l, :j))
 
-                C = contract(A, B, dims=(:j, :k))
+                C = contract(A, B, dims = (:j, :k))
                 C_ein = ein"ijk, klj -> il"(A, B)
                 @test labels(C) == (:i, :l)
                 @test size(C) == (2, 5) == size(C_ein)
@@ -178,20 +178,20 @@
             # Throw exception if left_inds is not provided
             @test_throws UndefKeywordError qr(tensor)
             # Throw exception if left_inds ∉ labels(tensor)
-            @test_throws ErrorException qr(tensor, left_inds=(:l,))
+            @test_throws ErrorException qr(tensor, left_inds = (:l,))
             # throw exception if no right-inds
-            @test_throws ErrorException qr(tensor, left_inds=(:i, :j, :k))
+            @test_throws ErrorException qr(tensor, left_inds = (:i, :j, :k))
         end
 
         @testset "labels" begin
-            Q, R = qr(tensor, left_inds=labels(tensor)[1:2])
+            Q, R = qr(tensor, left_inds = labels(tensor)[1:2])
             @test labels(Q)[1:2] == labels(tensor)[1:2]
             @test labels(Q)[3] == labels(R)[1]
             @test labels(R)[2] == labels(tensor)[3]
         end
 
         @testset "size" begin
-            Q, R = qr(tensor, left_inds=labels(tensor)[1:2])
+            Q, R = qr(tensor, left_inds = labels(tensor)[1:2])
             # Q's new index size = min(prod(left_inds), prod(right_inds)).
             @test size(Q) == (2, 2, 4)
             @test size(R) == (2, 2)
@@ -199,20 +199,20 @@
             # Additional test with different dimensions
             data2 = rand(2, 4, 6, 8)
             tensor2 = Tensor(data2, (:i, :j, :k, :l))
-            Q2, R2 = qr(tensor2, left_inds=labels(tensor2)[1:2])
+            Q2, R2 = qr(tensor2, left_inds = labels(tensor2)[1:2])
             @test size(Q2) == (2, 4, 8)
             @test size(R2) == (8, 6, 8)
         end
 
         @testset "[accuracy]" begin
-            Q, R = qr(tensor, left_inds=labels(tensor)[1:2])
+            Q, R = qr(tensor, left_inds = labels(tensor)[1:2])
             Q_truncated = view(Q, labels(Q)[end] => 1:2)
             tensor_recovered = ein"ijk, kl -> ijl"(Q_truncated, R)
             @test tensor_recovered ≈ parent(tensor)
 
             data2 = rand(2, 4, 6, 8)
             tensor2 = Tensor(data2, (:i, :j, :k, :l))
-            Q2, R2 = qr(tensor2, left_inds=labels(tensor2)[1:2])
+            Q2, R2 = qr(tensor2, left_inds = labels(tensor2)[1:2])
             tensor2_recovered = ein"ijk, klm -> ijlm"(Q2, R2)
             @test tensor2_recovered ≈ parent(tensor2)
         end

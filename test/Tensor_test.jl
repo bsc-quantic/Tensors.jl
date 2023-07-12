@@ -69,11 +69,7 @@
         @test parent(replace(tensor, :a => :u, :b => :v, :c => :w)) === parent(tensor)
 
         # :alias in meta
-        tensor = Tensor(
-            zeros(2, 2, 2),
-            (:i, :j, :k);
-            alias = Dict(:left => :i, :right => :j, :up => :k),
-        )
+        tensor = Tensor(zeros(2, 2, 2), (:i, :j, :k); alias = Dict(:left => :i, :right => :j, :up => :k))
 
         replaced_tensor = replace(tensor, :i => :u, :j => :v, :k => :w)
         @test labels(replaced_tensor) == (:u, :v, :w)

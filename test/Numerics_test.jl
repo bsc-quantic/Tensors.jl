@@ -176,22 +176,27 @@
 
         @testset "[exceptions]" begin
             # Throw exception if left_inds is not provided
-            @test_throws UndefKeywordError qr(tensor)
+            @test_throws ArgumentError qr(tensor)
+
             # Throw exception if left_inds ∉ labels(tensor)
-            @test_throws ErrorException qr(tensor, left_inds = (:l,))
+            @test_throws ArgumentError qr(tensor, left_inds = (:l,))
+            @test_throws ArgumentError qr(tensor, right_inds = (:l,))
+
             # throw exception if no right-inds
-            @test_throws ErrorException qr(tensor, left_inds = (:i, :j, :k))
+            @test_throws ArgumentError qr(tensor, left_inds = (:i, :j, :k))
+            @test_throws ArgumentError qr(tensor, right_inds = (:i, :j, :k))
+
+            @test_throws ArgumentError qr(tensor, left_inds = (:i,), virtualind = :j)
         end
 
         @testset "labels" begin
-            Q, R = qr(tensor, left_inds = labels(tensor)[1:2])
-            @test labels(Q)[1:2] == labels(tensor)[1:2]
-            @test labels(Q)[3] == labels(R)[1]
-            @test labels(R)[2] == labels(tensor)[3]
+            Q, R = qr(tensor, left_inds = (:i, :j), virtualind = :l)
+            @test issetequal(labels(Q), (:i, :j, :l))
+            @test issetequal(labels(R), (:l, :k))
         end
 
         @testset "size" begin
-            Q, R = qr(tensor, left_inds = labels(tensor)[1:2])
+            Q, R = qr(tensor, left_inds = (:i, :j))
             # Q's new index size = min(prod(left_inds), prod(right_inds)).
             @test size(Q) == (2, 2, 4)
             @test size(R) == (2, 2)
@@ -199,20 +204,20 @@
             # Additional test with different dimensions
             data2 = rand(2, 4, 6, 8)
             tensor2 = Tensor(data2, (:i, :j, :k, :l))
-            Q2, R2 = qr(tensor2, left_inds = labels(tensor2)[1:2])
+            Q2, R2 = qr(tensor2, left_inds = (:i, :j))
             @test size(Q2) == (2, 4, 8)
             @test size(R2) == (8, 6, 8)
         end
 
         @testset "[accuracy]" begin
-            Q, R = qr(tensor, left_inds = labels(tensor)[1:2])
+            Q, R = qr(tensor, left_inds = (:i, :j))
             Q_truncated = view(Q, labels(Q)[end] => 1:2)
             tensor_recovered = ein"ijk, kl -> ijl"(Q_truncated, R)
             @test tensor_recovered ≈ parent(tensor)
 
             data2 = rand(2, 4, 6, 8)
             tensor2 = Tensor(data2, (:i, :j, :k, :l))
-            Q2, R2 = qr(tensor2, left_inds = labels(tensor2)[1:2])
+            Q2, R2 = qr(tensor2, left_inds = (:i, :j))
             tensor2_recovered = ein"ijk, klm -> ijlm"(Q2, R2)
             @test tensor2_recovered ≈ parent(tensor2)
         end

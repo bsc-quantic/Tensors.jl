@@ -114,13 +114,19 @@ end
 
 LinearAlgebra.qr(t::Tensor{<:Any,2}; kwargs...) = Base.@invoke qr(t::Tensor; left_inds = (first(labels(t)),), kwargs...)
 
-function LinearAlgebra.qr(t::Tensor; left_inds, virtualind::Symbol = Symbol(uuid4()), kwargs...)
-    # TODO better error exception and checks
-    isempty(left_inds) && throw(ErrorException("no left-indices in QR factorization"))
-    left_inds ⊆ labels(t) || throw(ErrorException("all left-indices must be in $(labels(t))"))
+function LinearAlgebra.qr(t::Tensor; left_inds = (), right_inds = (), virtualind::Symbol = Symbol(uuid4()), kwargs...)
+    isdisjoint(left_inds, right_inds) ||
+        throw(ArgumentError("left ($left_inds) and right $(right_inds) indices must be disjoint"))
 
-    right_inds = setdiff(labels(t), left_inds)
-    isempty(right_inds) && throw(ErrorException("no right-indices in QR factorization"))
+    left_inds, right_inds =
+        isempty(left_inds) ? (setdiff(labels(t), right_inds), right_inds) :
+        isempty(right_inds) ? (left_inds, setdiff(labels(t), left_inds)) :
+        throw(ArgumentError("cannot set both left and right indices"))
+
+    all(!isempty, (left_inds, right_inds)) || throw(ArgumentError("no right-indices left in QR factorization"))
+    all(∈(labels(t)), left_inds ∪ right_inds) || throw(ArgumentError("indices must be in $(labels(t))"))
+
+    virtualind ∉ labels(t) || throw(ArgumentError("new virtual bond name ($virtualind) cannot be already be present"))
 
     # permute array
     tensor = permutedims(t, (left_inds..., right_inds...))

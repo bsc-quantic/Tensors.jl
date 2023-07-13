@@ -217,4 +217,35 @@
             @test isapprox(only(transpose(tensor) * tensor), tr(transpose(data) * data))
         end
     end
+
+    @testset "expand" begin
+        data = rand(2, 2, 2)
+        tensor = Tensor(data, (:i, :j, :k))
+
+        let new = expand(tensor, label = :x, axis = 1)
+            @test labels(new) == (:x, :i, :j, :k)
+            @test size(new, :x) == 1
+            @test selectdim(new, :x, 1) == tensor
+        end
+
+        let new = expand(tensor, label = :x, axis = 3)
+            @test labels(new) == (:i, :j, :x, :k)
+            @test size(new, :x) == 1
+            @test selectdim(new, :x, 1) == tensor
+        end
+
+        let new = expand(tensor, label = :x, axis = 1, size = 2, method = :zeros)
+            @test labels(new) == (:x, :i, :j, :k)
+            @test size(new, :x) == 2
+            @test selectdim(new, :x, 1) == tensor
+            @test selectdim(new, :x, 2) == Tensor(zeros(size(data)...), labels(tensor))
+        end
+
+        let new = expand(tensor, label = :x, axis = 1, size = 2, method = :repeat)
+            @test labels(new) == (:x, :i, :j, :k)
+            @test size(new, :x) == 2
+            @test selectdim(new, :x, 1) == tensor
+            @test selectdim(new, :x, 2) == tensor
+        end
+    end
 end

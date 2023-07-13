@@ -198,3 +198,31 @@ Base.adjoint(t::Tensor) = Tensor(conj(parent(t)), labels(t); t.meta...)
 Base.transpose(t::Tensor{T,1,A}) where {T,A<:AbstractArray{T,1}} = permutedims(t, (1,))
 Base.transpose(t::Tensor{T,2,A}) where {T,A<:AbstractArray{T,2}} =
     Tensor(transpose(parent(t)), reverse(labels(t)); t.meta...)
+
+function expand(tensor::Tensor; label, axis = 1, size = 1, method = :zeros)
+    array = parent(tensor)
+    data =
+        size == 1 ? reshape(array, Base.size(array)[1:axis-1]..., 1, Base.size(array)[axis:end]...) :
+        method === :zeros ? __expand_zeros(array, axis, size) :
+        method === :repeat ? __expand_repeat(array, axis, size) :
+        # method === :identity ? __expand_identity(array, axis, size) :
+        throw(ArgumentError("method \"$method\" is not valid"))
+
+    labels = (Tensors.labels(tensor)[1:axis-1]..., label, Tensors.labels(tensor)[axis:end]...)
+
+    return Tensor(data, labels; tensor.meta...)
+end
+
+function __expand_zeros(array, axis, size)
+    new = zeros(eltype(array), Base.size(array)[1:axis-1]..., size, Base.size(array)[axis:end]...)
+
+    view = selectdim(new, axis, 1)
+    copy!(view, array)
+
+    return new
+end
+
+__expand_repeat(array, axis, size) = repeat(
+    reshape(array, Base.size(array)[1:axis-1]..., 1, Base.size(array)[axis:end]...),
+    outer = (fill(1, axis - 1)..., size, fill(1, ndims(array) - axis + 1)...),
+)

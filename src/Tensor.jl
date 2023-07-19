@@ -40,9 +40,9 @@ Tensor(data::Number; meta...) = Tensor(fill(data); meta...)
 
 Base.copy(t::Tensor) = Tensor(parent(t), labels(t); deepcopy(t.meta)...)
 
-function Base.copy(t::Tensor{T,N,SubArray{T,N,Array{T,M},I,L}}) where {T, N, M, I, L}
-    data = copy(t.data)  # This calls copy(::SubArray)
-    labels = t.labels  # Tuples are immutable, no need to copy
+function Base.copy(t::Tensor{T,N,<:SubArray{T,N}}) where {T, N}
+    data = copy(t.data)
+    labels = t.labels
     meta = deepcopy(t.meta)
     return Tensor(data, labels; (k => v for (k, v) in meta)...)
 end

@@ -34,6 +34,13 @@ Tensor(data::Number; meta...) = Tensor(fill(data); meta...)
 
 Base.copy(t::Tensor) = Tensor(parent(t), labels(t); deepcopy(t.meta)...)
 
+function Base.copy(t::Tensor{T,N,<:SubArray{T,N}}) where {T, N}
+    data = copy(t.data)
+    labels = t.labels
+    meta = deepcopy(t.meta)
+    return Tensor(data, labels; (k => v for (k, v) in meta)...)
+end
+
 # TODO pass new labels and meta
 function Base.similar(t::Tensor{_,N}, ::Type{T}; kwargs...) where {_,T,N}
     if N == 0
